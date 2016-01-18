@@ -3,7 +3,9 @@ Code used in MiCE 8992 Spring 2016
 
 ## Getting rmarkdown working
 - Install rmarkdown package in R
-`install.packages('rmarkdown',repo='http://cran.wustl.edu')`
+```
+install.packages('rmarkdown',repo='http://cran.wustl.edu')
+```
 
 - google and install pandoc
 - google and install basictex for mac (to get pdflatex)
