@@ -1,66 +1,73 @@
-# Loading QIIME data into R
-### Install biom package
+---
+title: "Loading Microbiome Data"
+output:
+  html_document:
+    theme: united
+---
+
+
+**Install biom package**
 ```{r eval=FALSE}
 install.packages('biom',repo='http://cran.wustl.edu')
 ```
 
-### Load biom package
+**Load biom package**
 ```
 library('biom')
 ```
 
-### Load global gut data using biom package
-```{r eval=T}
+**Load global gut data using biom package**
+```{r eval=TRUE}
 gg.otus.biom <- read_biom('../data/globalgut/otutable.biom')
 ```
 
-### Extract data matrix (OTU counts) from biom table
-```{r eval=T}
+**Extract data matrix (OTU counts) from biom table**
+```{r eval=TRUE}
 gg.otus <- as.matrix(biom_data(gg.otus.biom))
 
 # transpose so that rows are samples and columns are OTUs
 gg.otus <- t(gg.otus)
 ```
 
-### Plot histogram of sample depths
+**Plot histogram of sample depths**
 ```{r}
 depths <- rowSums(gg.otus)
 hist(depths,breaks=30)
 ```
 
-### Plot histogram of OTU frequencies
+**Plot histogram of OTU frequencies**
 ```{r}
 otu.counts <- colSums(gg.otus > 0)
 hist(otu.counts,breaks=30)
 ```
 
-### Remove OTUs present in < 10% of samples
+**Remove OTUs present in < 10% of samples**
 ```{r}
 gg.otus <- gg.otus[,colMeans(gg.otus > 0) >= .1]
 depths <- rowSums(gg.otus)
 dim(gg.otus)
 ```
 
-### Re-plot histogram of OTU frequencies now that we removed singletons
+**Re-plot histogram of OTU frequencies now that we removed singletons**
 ```{r}
 otu.counts <- colSums(gg.otus > 0)
 hist(otu.counts,breaks=30)
 ```
 
-### Remove any samples with very low depth
+**Remove any samples with very low depth**
 ```{r}
 sort(depths)[1:10]
 gg.otus <- gg.otus[depths >= 1000,]
 dim(gg.otus)
 ```
 
-### Load mapping file
+**Load mapping file**
 ```{r}
 gg.map <- read.table('../data/globalgut/map.txt',sep='\t',head=T,row=1,check=F,comment='')
 
 ```
 
-### Ensure that mapping file and OTU table contain the sample samples in the same order
+**Ensure that mapping file and OTU table contain the sample samples in the same order**
 ```{r}
 sample.ids <- intersect(rownames(gg.otus), rownames(gg.map))
 
