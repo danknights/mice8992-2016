@@ -10,6 +10,4 @@ output:
 ###01. Loading QIIME data into R###
 [HTML](01.loading.data.html)   [PDF](01.loading.data.pdf)   
 
-###02. Simple statistical analysis###
-[HTML](02.simple.stats.html)   [PDF](02.simple.stats.pdf)   
 
