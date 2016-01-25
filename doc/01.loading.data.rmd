@@ -12,7 +12,7 @@ install.packages('biom',repo='http://cran.wustl.edu')
 ```
 
 **Load biom package**
-```
+```{r}
 library('biom')
 ```
 
