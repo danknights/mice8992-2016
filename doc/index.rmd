@@ -1,11 +1,23 @@
 ---
-title: "Loading Microbiome Data"
+title: "Discovering Patterns in the Microbiome"
 output:
   html_document:
     theme: united
   pdf_document:
     theme: united
 ---
+
+## Course analysis code
+MiCE 8992, Spring 2016  
+Copyright Dan Knights, 2016  
+University of Minnesota  
+http://www.knightslab.org
+
+
+# Table of Contents
+
+###Course Github repository###
+https://github.com/danknights/mice8992-2016
 
 ###01. Loading QIIME data into R###
 [HTML](01.loading.data.html)   [PDF](01.loading.data.pdf)   
