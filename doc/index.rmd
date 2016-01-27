@@ -20,6 +20,9 @@ https://github.com/danknights/mice8992-2016
 ###01. Installing QIIME###
 [HTML](01.installing.qiime.html)   [PDF](01.installing.qiime.pdf)   
 
-###02. Loading QIIME data into R###
-[HTML](02.loading.data.html)   [PDF](02.loading.data.pdf)   
+###02. First steps with QIIME###
+[HTML](02.first.steps.with.qiime.html)   [PDF](02.first.steps.with.qiime.pdf)   
+
+###03. Loading QIIME data into R###
+[HTML](03.loading.data.into.R.html)   [PDF](03.loading.data.into.R.pdf)   
 

@@ -4,7 +4,9 @@ output:
   html_document:
     theme: united
 ---
+Back to [Table of Contents](index.html)  
 
+After you have [installed QIIME](01.installing.qiime.html) and [generated an OTU table](02.first.steps.with.qiime.html), you can load the OTU table into R.
 
 **Install biom package**
 ```{r eval=FALSE}
@@ -16,9 +18,16 @@ install.packages('biom',repo='http://cran.wustl.edu')
 library('biom')
 ```
 
+**Convert BIOM file to JSON format**  
+If you have data in a "new" BIOM format (HDF5), you first need to convert to JSON format first.  
+```{r eval=FALSE, engine='bash'}
+# make a JSON-formatted OTU table for loading into R
+biom convert -i otus_closed_ref/otu_table.biom -o otu_table_json.biom --to-json
+```
+
 **Load global gut data using biom package**
 ```{r eval=TRUE}
-gg.otus.biom <- read_biom('../data/globalgut/otutable.biom')
+gg.otus.biom <- read_biom('../data/globalgut/otu_table_json.biom')
 ```
 
 **Extract data matrix (OTU counts) from biom table**

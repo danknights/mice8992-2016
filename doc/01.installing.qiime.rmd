@@ -8,6 +8,8 @@ output:
     toc: true
 ---
 
+Back to [Table of Contents](index.html)  
+
 ## Using QIIME on MSI
 1. Connect to MSI using Terminal on Mac/Linux, or putty on Windows, download here: http://www.putty.org/
 ```{r eval=FALSE, enging='bash'}
@@ -115,33 +117,5 @@ print_qiime_config.py
 4. Note: to start the QIIME virtual machine you will need to run VirtualBox, and create a "new" virtual machine. The option for "Type" is "Linux". The option for "Version" should be "Ubuntu (64 bit)". If you only see 32-bit options, then visit this web page and try the fix: http://www.fixedbyvonnie.com/2014/11/virtualbox-showing-32-bit-guest-versions-64-bit-host-os. A similar solution is described here: http://qiime.org/install/virtual_box.html
 5. Once you have the virtual machine running, you need to make sure the internet is working, that you can cut-and-paste text from your native OS to the virtual machine, and that you can share files between your native OS filesystem and the virtual machine. This means first installing the "Guest Additions", and then performing a few more steps, as described here: https://github.com/biocore/qiime/wiki/QIIME-Virtual-Box:-Before-you-start
 
-## Running the QIIME tutorial
-Ready to try out QIIME? Follow the QIIME tutorial here: http://qiime.org/tutorials/tutorial.html
-
-Note: you can download files directly to MSI or your Linux computer from the command line with ```wget ftp://ftp.microbio.me/pub/qiime-files/qiime_overview_tutorial.zip```.
-
-## Running QIIME on class data
-You can also run QIIME on the global gut data in the Course repository. First download the repository and data:
-```{r eval=FALSE, engine='bash'}
-git clone https://github.com/danknights/mice8992-2016.git repo
-cd repo
-cd data
-cd globalgut
-```
-
-Then run OTU picking and core QIIME analyes:  
-```{r eval=FALSE, engine='bash'}
-# pick de novo OTUs 
-time pick_de_novo_otus.py -i global_gut_200k.fna -o otus_de_novo
-
-# run core QIIME diversity analyses on de novo OTU table
-time core_diversity_analyses.py -i otus_de_novo/otu_table.biom -m map.txt -o corediv_dn -e 1000 --tree_fp otus_de_novo/rep_set.tre
-
-# pick closed reference OTUs
-time pick_closed_reference_otus.py -i global_gut_200k.fna -o otus_closed_ref
-
-# run core QIIME diversity analyses on closed-reference OTU table
-time core_diversity_analyses.py -i otus_closed_ref/otu_table.biom -m map.txt -o corediv_cr -e 1000 --tree_fp otus_closed_ref/97_otus.tree
-```
-
-You can then open the "index.html" file in the output folder in your favorite web browser, and click to see the results of the analysis. In Chrome you may need to open Chrome first, and then choose "File-->Open File...".
+## Next steps
+Now try running QIIME as described here: [02. First steps with QIIME](02.first.steps.with.qiime.html)

@@ -12,7 +12,11 @@ time core_diversity_analyses.py -i otus_de_novo/otu_table.biom -m map.txt -o cor
 
 # pick closed reference OTUs
 time pick_closed_reference_otus.py -i global_gut_200k.fna -o otus_closed_ref
-cp otus_closed_ref/otu_table.biom otutable.biom
+cp otus_closed_ref/otu_table.biom otu_table.biom
 
 # run core QIIME diversity analyses on closed-reference OTU table
 time core_diversity_analyses.py -i otus_closed_ref/otu_table.biom -m map.txt -o corediv_cr -e 1000 --tree_fp otus_closed_ref/97_otus.tree
+
+# make a JSON-formatted OTU table for loading into R
+biom convert -i otu_table.biom -o otu_table_json.biom --to-json
+
