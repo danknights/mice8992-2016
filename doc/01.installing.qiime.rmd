@@ -1,0 +1,58 @@
+---
+title: "Installing QIIME"
+output:
+  html_document:
+    theme: united
+---
+
+
+##Installing QIIME on Linux
+
+Tested on Ubuntu MATE 15.10
+
+```{r test-bash, engine='bash', eval=FALSE}
+# system dependencies
+sudo apt-get install build-essential python-dev python-pip
+
+# Get ready for matplotlib
+# http://stackoverflow.com/questions/20533426/ubuntu-running-pip-install-gives-error-the-following-required-packages-can-no
+sudo apt-get install libfreetype6-dev
+
+# Get ready to install numpy and scipy
+# http://stackoverflow.com/questions/11114225/installing-scipy-and-numpy-using-pip
+sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran
+
+pip install numpy
+pip install qiime
+
+# Note: on my installation, the QIIME binaries were placed in $HOME/.local/bin/
+# so I added that dir to my PATH environment variable:
+echo "export PATH=\$HOME/.local/bin:\$PATH" >> ~/.bashrc
+echo "export PATH=\$HOME/.local/bin:\$PATH" >> ~/.bash_profile
+
+# restart terminal then test:
+print_qiime_config.py -h
+
+```
+
+## Installing QIIME on Mac using macqiime
+Tested on Mac OSX El Capitan 10.11.3
+
+```{r engine='bash', eval=FALSE}
+# extract file
+tar xvzf MacQIIME_1.9.1-20150604_OS10.7.tgz
+
+# enter the directory and run the install script.
+# it should request your administrator password.
+cd MacQIIME_1.9.1-20150604_OS10.7
+./install.s
+
+# Try it out
+macqiime
+print_qiime_config.py
+```
+
+## Using QIIME virtual machine on Windows/Mac/Linux
+- Download and install VirtualBox: https://www.virtualbox.org/wiki/Downloads
+- Download and open the QIIME virtualbox image: http://qiime.org/install/virtual_box.html
+- Follow instructions at http://qiime.org/install/virtual_box.html
