@@ -5,7 +5,7 @@ output:
     theme: united
 ---
 
-## Course analysis code
+## Course code browser
 MiCE 8992, Spring 2016  
 Copyright Dan Knights, 2016  
 University of Minnesota  
