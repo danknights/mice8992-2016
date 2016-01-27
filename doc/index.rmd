@@ -3,8 +3,6 @@ title: "Discovering Patterns in the Microbiome"
 output:
   html_document:
     theme: united
-  pdf_document:
-    theme: united
 ---
 
 ## Course analysis code
