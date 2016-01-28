@@ -21,13 +21,15 @@ library('biom')
 **Convert BIOM file to JSON format**  
 If you have data in a "new" BIOM format (HDF5), you first need to convert to JSON format first.  
 ```{r eval=FALSE, engine='bash'}
+# (on the command-line, in the course repo)
 # make a JSON-formatted OTU table for loading into R
+cd data/globalgut-66-adults
 biom convert -i otus_closed_ref/otu_table.biom -o otu_table_json.biom --to-json
 ```
 
 **Load global gut data using biom package**
 ```{r eval=TRUE}
-gg.otus.biom <- read_biom('../data/globalgut/otu_table_json.biom')
+gg.otus.biom <- read_biom('../data/globalgut-66-adults/otu_table_json.biom')
 ```
 
 **Extract data matrix (OTU counts) from biom table**
@@ -72,7 +74,7 @@ dim(gg.otus)
 
 **Load mapping file**
 ```{r}
-gg.map <- read.table('../data/globalgut/map.txt',sep='\t',head=T,row=1,check=F,comment='')
+gg.map <- read.table('../data/globalgut-66-adults/map.txt',sep='\t',head=T,row=1,check=F,comment='')
 
 ```
 

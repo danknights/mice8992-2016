@@ -81,23 +81,23 @@ img {
 <h2>Running QIIME on class data</h2>
 <p>You can also run QIIME on the global gut data in the Course repository. First download the repository and data:</p>
 <pre class="bash"><code>git clone https://github.com/danknights/mice8992-2016.git repo</code></pre>
-<p>For example, move to the global gut data directory:</p>
+<p>For example, move to the globalgut-66-adults data directory:</p>
 <pre class="bash"><code>cd repo
 cd data
-cd globalgut</code></pre>
-<p>Then run OTU picking and core QIIME analyes:</p>
-<pre class="bash"><code># pick de novo OTUs 
-time pick_de_novo_otus.py -i global_gut_200k.fna -o otus_de_novo
-
-# run core QIIME diversity analyses on de novo OTU table
-time core_diversity_analyses.py -i otus_de_novo/otu_table.biom -m map.txt -o corediv_dn -e 1000 --tree_fp otus_de_novo/rep_set.tre
-
-# pick closed reference OTUs
-time pick_closed_reference_otus.py -i global_gut_200k.fna -o otus_closed_ref
+cd globalgut-66-adults</code></pre>
+<p>This directory contains sequences from 66 adults in 3 countries (Yatsunenko et. al. Nature 2012). Then run OTU picking and core QIIME analyes:</p>
+<pre class="bash"><code># pick closed reference OTUs
+time pick_closed_reference_otus.py -i seqs.fna -o closedref
 
 # run core QIIME diversity analyses on closed-reference OTU table
-time core_diversity_analyses.py -i otus_closed_ref/otu_table.biom -m map.txt -o corediv_cr -e 1000 --tree_fp otus_closed_ref/97_otus.tree</code></pre>
-<p>You can then open the “index.html” file in the output folder in your favorite web browser, and click to see the results of the analysis. In Chrome you may need to open Chrome first, and then choose “File–&gt;Open File…”. For the Global Gut data set, click on “index.html” next to PCoA plot (weighted_unifrac). Then click the “Colors” tab in the upper right and select “AGE_GROUP” by which to color the points.</p>
+time core_diversity_analyses.py -i closedref/otu_table.biom -m map.txt -o closedref/corediv -e 500 --tree_fp closedref/97_otus.tree -v
+
+# pick de novo OTUs
+time pick_de_novo_otus.py -i seqs.fna -o denovo
+
+# run core QIIME diversity analyses on de novo OTU table
+time core_diversity_analyses.py -i denovo/otu_table.biom -m map.txt -o denovo/corediv -e 500 --tree_fp denovo/rep_set.tre</code></pre>
+<p>You can then open the “index.html” file in the output folder in your favorite web browser, and click to see the results of the analysis. In Chrome you may need to open Chrome first, and then choose “File–&gt;Open File…”. For the Global Gut data set, click on “index.html” next to PCoA plot (weighted_unifrac). Then click the “Colors” tab in the upper right and select “COUNTRY” by which to color the points.</p>
 </div>
 
 
