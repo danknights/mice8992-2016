@@ -24,7 +24,7 @@ If you have data in a "new" BIOM format (HDF5), you first need to convert to JSO
 # (on the command-line, in the course repo)
 # make a JSON-formatted OTU table for loading into R
 cd data/globalgut-66-adults
-biom convert -i otus_closed_ref/otu_table.biom -o otu_table_json.biom --to-json
+biom convert -i otu_table.biom -o otu_table_json.biom --to-json
 ```
 
 **Load global gut data using biom package**
