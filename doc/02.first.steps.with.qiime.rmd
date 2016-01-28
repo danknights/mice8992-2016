@@ -26,22 +26,23 @@ For example, move to the global gut data directory:
 ```{r eval=FALSE, engine='bash'}
 cd repo
 cd data
-cd globalgut
+cd globalgut-66-adults
 ```
 
 Then run OTU picking and core QIIME analyes:  
 ```{r eval=FALSE, engine='bash'}
-# pick de novo OTUs 
-time pick_de_novo_otus.py -i global_gut_200k.fna -o otus_de_novo
-
-# run core QIIME diversity analyses on de novo OTU table
-time core_diversity_analyses.py -i otus_de_novo/otu_table.biom -m map.txt -o corediv_dn -e 1000 --tree_fp otus_de_novo/rep_set.tre
-
 # pick closed reference OTUs
-time pick_closed_reference_otus.py -i global_gut_200k.fna -o otus_closed_ref
+time pick_closed_reference_otus.py -i seqs.fna -o closedref
 
 # run core QIIME diversity analyses on closed-reference OTU table
-time core_diversity_analyses.py -i otus_closed_ref/otu_table.biom -m map.txt -o corediv_cr -e 1000 --tree_fp otus_closed_ref/97_otus.tree
+time core_diversity_analyses.py -i closedref/otu_table.biom -m map.txt -o closedref/corediv -e 500 --tree_fp closedref/97_otus.tree -v
+
+# pick de novo OTUs
+time pick_de_novo_otus.py -i seqs.fna -o denovo
+
+# run core QIIME diversity analyses on de novo OTU table
+time core_diversity_analyses.py -i denovo/otu_table.biom -m map.txt -o denovo/corediv -e 500 --tree_fp denovo/rep_set.tre
+
 ```
 
-You can then open the "index.html" file in the output folder in your favorite web browser, and click to see the results of the analysis. In Chrome you may need to open Chrome first, and then choose "File-->Open File...". For the Global Gut data set, click on "index.html" next to PCoA plot (weighted_unifrac). Then click the "Colors" tab in the upper right and select "AGE_GROUP" by which to color the points.
+You can then open the "index.html" file in the output folder in your favorite web browser, and click to see the results of the analysis. In Chrome you may need to open Chrome first, and then choose "File-->Open File...". For the Global Gut data set, click on "index.html" next to PCoA plot (weighted_unifrac). Then click the "Colors" tab in the upper right and select "COUNTRY" by which to color the points.
