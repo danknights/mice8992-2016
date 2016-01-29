@@ -118,7 +118,7 @@ plot(pc.chisq[,1], pc.chisq[,2], col=my.colors[layer], cex=3, pch=16)
 ## Visualizing UniFrac distances
 Calculate UniFrac distances in QIIME  
 ```{r, eval=FALSE}
-# Note: This commands are on the command line, not in R
+# Note: This command is on the command line, not in R
 # (load macqiime if necessary)
 beta_diversity.py -i otu_table.biom -o beta -t ../ref/greengenes/97_otus.tree
 ```
