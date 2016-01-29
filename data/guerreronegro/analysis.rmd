@@ -61,7 +61,7 @@ dim(map)
 ```
 
 
-Get five different distances metrics
+Get three different distances metrics
 ```{r, eval=TRUE}
 
 # get Euclidean distance
@@ -75,14 +75,6 @@ d.bray <- vegdist(otus)
 my.ca <- cca(otus)
 d.chisq <- as.matrix(dist(my.ca$CA$u[,1:2]))
 
-# load unweighted and weighted unifrac
-d.uuf <- read.table('beta/unweighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
-d.wuf <- read.table('beta/weighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
-
-# ensure that these last two matrices have the same samples in the 
-# same order as the metadata table
-d.uuf <- d.uuf[common.ids, common.ids]
-d.wuf <- d.wuf[common.ids, common.ids]
 ```
 
 Now run principal coordinates embedding on the distance metrics
@@ -96,10 +88,6 @@ pc.bray <- cmdscale(d.bray,k=2)
 
 # get first two dimensions of chi-square coordinates:
 pc.chisq <- my.ca$CA$u[,1:2]
-
-# get first two dimensions of unifrac distances:
-pc.uuf <- cmdscale(d.uuf, k=2)
-pc.wuf <- cmdscale(d.wuf, k=2)
 ```
 
 Plot Euclidean distances with gradient colors
@@ -125,6 +113,31 @@ Plot Chi-square distances with gradient colors
 
 # Plot Chi-square PCoA
 plot(pc.chisq[,1], pc.chisq[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+## Visualizing UniFrac distances
+Calculate UniFrac distances in QIIME  
+```{r, eval=FALSE}
+# Note: This commands are on the command line, not in R
+# (load macqiime if necessary)
+beta_diversity.py -i otu_table.biom -o beta -t ../ref/greengenes/97_otus.tree
+```
+
+
+Load UniFrac distances, calculate PCoA
+```{r, eval=TRUE}
+# load unweighted and weighted unifrac
+d.uuf <- read.table('beta/unweighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
+d.wuf <- read.table('beta/weighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
+
+# ensure that these last two matrices have the same samples in the 
+# same order as the metadata table
+d.uuf <- d.uuf[common.ids, common.ids]
+d.wuf <- d.wuf[common.ids, common.ids]
+
+# get first two dimensions of unifrac PCoA:
+pc.uuf <- cmdscale(d.uuf, k=2)
+pc.wuf <- cmdscale(d.wuf, k=2)
 ```
 
 Plot unweighted UniFrac distances with gradient colors
