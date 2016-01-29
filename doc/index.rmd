@@ -11,6 +11,7 @@ Copyright Dan Knights, 2016
 University of Minnesota  
 http://www.knightslab.org
 
+The Github repo for this code is https://github.com/danknights/mice8992-2016.
 
 # Table of Contents
 
