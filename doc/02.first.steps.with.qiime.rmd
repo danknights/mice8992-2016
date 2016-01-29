@@ -9,6 +9,8 @@ output:
 ---
 Back to [Table of Contents](index.html)  
 
+**All of the code in this page is meant to be run on the command line.**
+
 ## Running the QIIME tutorial
 After you have gotten QIIME working [as described](01.installing.qiime.html), you are ready to try out QIIME.
 

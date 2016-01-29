@@ -10,6 +10,8 @@ output:
 
 Back to [Table of Contents](index.html)  
 
+**All of the code in this page is meant to be run on the command line.**
+
 ## Using QIIME on MSI
 1. Connect to MSI using Terminal on Mac/Linux, or putty on Windows, download here: http://www.putty.org/
 ```{r eval=FALSE, enging='bash'}

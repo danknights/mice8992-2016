@@ -1,0 +1,123 @@
+---
+title: "Day 8: Beta Diversity (Guerrero Negro)"
+output:
+  html_document:
+    theme: united
+    fig_width: 6
+    fig_height: 6
+  pdf_document:
+    fig_width: 6
+    fig_height: 6
+---
+Back to [Table of Contents](../../doc/index.html)  
+
+**All of the code in this page is meant to be run in ```R``` unless otherwise specified.**
+
+Install biom package and vegan package if not installed.
+```{r eval=FALSE}
+install.packages(c('biom','vegan'),repo='http://cran.wustl.edu')
+```
+
+Load biom package, load data
+```{r, eval=TRUE}
+library('biom')
+library('vegan')
+
+# load biom file
+otus.biom <- read_biom('otu_table_json.biom')
+
+# Extract data matrix (OTU counts) from biom table
+otus <- as.matrix(biom_data(otus.biom))
+
+# transpose so that rows are samples and columns are OTUs
+otus <- t(otus)
+
+# load mapping file
+map <- read.table('map.txt', sep='\t', comment='', head=T, row.names=1)
+```
+
+It is extremely important to ensure that your OTU table and metadata table sample IDs are lined up correctly.
+```{r, eval=TRUE}
+# see rownames of map and otus
+rownames(map)
+rownames(otus)
+
+# find the overlap
+common.ids <- intersect(rownames(map), rownames(otus))
+
+# get just the overlapping samples
+otus <- otus[common.ids,]
+map <- map[common.ids,]
+```
+
+See dimensions of OTU table
+```{r}
+dim(otus)
+```
+
+See dimensions of mapping file
+```{r}
+dim(map)
+```
+
+
+Get three different distances metrics
+```{r, eval=TRUE}
+
+# get Euclidean distance
+d.euc <- dist(otus)
+
+# get Bray-Curtis distances (default for Vegan)
+d.bray <- vegdist(otus)
+
+# get Chi-square distances using vegan command
+# we will extract chi-square distances from correspondence analysis
+my.ca <- cca(otus)
+
+```
+
+Now run principal coordinates embedding on the distance metrics
+```{r, eval=TRUE}
+
+# Run PCoA (not PCA)
+pc.euc <- cmdscale(d.euc, k=2)
+
+# Bray-Curtis principal coords
+pc.bray <- cmdscale(d.bray,k=2)
+
+# get first two dimensions of chi-square coordinates:
+pc.chisq <- my.ca$CA$u[,1:2]
+```
+
+Plot Euclidean distances with gradient colors
+```{r, eval=TRUE}
+# makes a gradient from red to blue
+my.colors <- colorRampPalette(c('red','blue'))(10)
+
+# plot Euclidean PCoA coords using color gradient
+# based on layer (1...10)
+layer <- map[,'LAYER']
+plot(pc.euc[,1], pc.euc[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+Plot Bray-Curtis distances with gradient colors
+```{r, eval=TRUE}
+
+# Plot Bray-Curtis PCoA
+plot(pc.bray[,1], pc.bray[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+Plot Chi-square distances with gradient colors
+```{r, eval=TRUE}
+
+# Plot Chi-square PCoA
+plot(pc.chisq[,1], pc.chisq[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+Note: to make a PDF:
+```{r, eval=FALSE}
+pdf("chisq.pdf",width=5,height=5)
+plot(pc.chisq[,1], pc.chisq[,2], col=my.colors[map[,'LAYER']], cex=3, pch=16)
+dev.off()
+```
+
