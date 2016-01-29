@@ -186,6 +186,79 @@ pairs(d.vector.matrix)</code></pre>
 ## ChiSq 0.7664577 0.8976043 1.0000000 0.8535358 0.8192654
 ## UUF   0.9159583 0.9298203 0.8535358 1.0000000 0.9631557
 ## WUF   0.9344522 0.9454640 0.8192654 0.9631557 1.0000000</code></pre>
+<p>Which distance metric best recovered physical sample distances based on END_DEPTH</p>
+<pre class="r"><code># y is the euclidean distance matrix based on ending depth of each layer
+y &lt;- as.vector(dist(map$END_DEPTH))
+
+# Test the correlation of END_DEPTH distance and ecological distance
+# for each metric
+metrics &lt;- list(d.euc, d.bray, d.chisq, d.uuf, d.wuf)
+names(metrics) &lt;- colnames(d.vector.matrix) # reuse pairwise column names
+
+for(i in 1:length(metrics)){
+    d.name &lt;- names(metrics)[i]
+
+    # convert distance matrix to vector form
+    d &lt;- as.vector(as.dist(metrics[[i]]))
+
+    cat('Correlation of ',d.name,':','\n',sep='')
+    print(cor.test(d, y, method='spear', exact=FALSE))
+}</code></pre>
+<pre><code>## Correlation of Euc:
+## 
+##  Spearman's rank correlation rho
+## 
+## data:  d and y
+## S = 367040, p-value = 8.875e-07
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.3850855 
+## 
+## Correlation of BC:
+## 
+##  Spearman's rank correlation rho
+## 
+## data:  d and y
+## S = 222770, p-value &lt; 2.2e-16
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.6267841 
+## 
+## Correlation of ChiSq:
+## 
+##  Spearman's rank correlation rho
+## 
+## data:  d and y
+## S = 149150, p-value &lt; 2.2e-16
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.7501234 
+## 
+## Correlation of UUF:
+## 
+##  Spearman's rank correlation rho
+## 
+## data:  d and y
+## S = 282320, p-value = 2.59e-12
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##      rho 
+## 0.527028 
+## 
+## Correlation of WUF:
+## 
+##  Spearman's rank correlation rho
+## 
+## data:  d and y
+## S = 340610, p-value = 3.055e-08
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.4293781</code></pre>
+<p>Note that Chi-square has the highest correlation with END_DEPTH.</p>
 
 
 </div>

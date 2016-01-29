@@ -158,3 +158,26 @@ And plot the pairwise pearson correlations
 cor(d.vector.matrix)
 ```
 
+Which distance metric best recovered physical sample distances based on END_DEPTH
+```{R eval=TRUE}
+
+# y is the euclidean distance matrix based on ending depth of each layer
+y <- as.vector(dist(map$END_DEPTH))
+
+# Test the correlation of END_DEPTH distance and ecological distance
+# for each metric
+metrics <- list(d.euc, d.bray, d.chisq, d.uuf, d.wuf)
+names(metrics) <- colnames(d.vector.matrix) # reuse pairwise column names
+
+for(i in 1:length(metrics)){
+    d.name <- names(metrics)[i]
+
+    # convert distance matrix to vector form
+    d <- as.vector(as.dist(metrics[[i]]))
+
+    cat('Correlation of ',d.name,':','\n',sep='')
+    print(cor.test(d, y, method='spear', exact=FALSE))
+}
+```
+
+Note that Chi-square has the highest correlation with END_DEPTH.
