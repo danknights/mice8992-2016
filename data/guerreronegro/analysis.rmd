@@ -166,12 +166,12 @@ colnames(d.vector.matrix) <- c('Euc','BC','ChiSq','UUF','WUF')
 pairs(d.vector.matrix)
 ```
 
-And plot the pairwise pearson correlations
+And display the pairwise pearson correlations
 ```{r eval=TRUE}
 cor(d.vector.matrix)
 ```
 
-Which distance metric best recovered physical sample distances based on END_DEPTH
+Which distance metric best recovered physical sample distances based on END_DEPTH?
 ```{R eval=TRUE}
 
 # y is the euclidean distance matrix based on ending depth of each layer
