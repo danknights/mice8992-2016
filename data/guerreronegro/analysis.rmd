@@ -61,7 +61,7 @@ dim(map)
 ```
 
 
-Get three different distances metrics
+Get five different distances metrics
 ```{r, eval=TRUE}
 
 # get Euclidean distance
@@ -73,7 +73,16 @@ d.bray <- vegdist(otus)
 # get Chi-square distances using vegan command
 # we will extract chi-square distances from correspondence analysis
 my.ca <- cca(otus)
+d.chisq <- as.matrix(dist(my.ca$CA$u[,1:2]))
 
+# load unweighted and weighted unifrac
+d.uuf <- read.table('beta/unweighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
+d.wuf <- read.table('beta/weighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
+
+# ensure that these last two matrices have the same samples in the 
+# same order as the metadata table
+d.uuf <- d.uuf[common.ids, common.ids]
+d.wuf <- d.wuf[common.ids, common.ids]
 ```
 
 Now run principal coordinates embedding on the distance metrics
@@ -87,6 +96,10 @@ pc.bray <- cmdscale(d.bray,k=2)
 
 # get first two dimensions of chi-square coordinates:
 pc.chisq <- my.ca$CA$u[,1:2]
+
+# get first two dimensions of unifrac distances:
+pc.uuf <- cmdscale(d.uuf, k=2)
+pc.wuf <- cmdscale(d.wuf, k=2)
 ```
 
 Plot Euclidean distances with gradient colors
@@ -114,10 +127,34 @@ Plot Chi-square distances with gradient colors
 plot(pc.chisq[,1], pc.chisq[,2], col=my.colors[layer], cex=3, pch=16)
 ```
 
+Plot unweighted UniFrac distances with gradient colors
+```{r, eval=TRUE}
+
+plot(pc.uuf[,1], pc.uuf[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+Plot weighted UniFrac distances with gradient colors
+```{r, eval=TRUE}
+
+plot(pc.wuf[,1], pc.wuf[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
 Note: to make a PDF:
 ```{r, eval=FALSE}
 pdf("chisq.pdf",width=5,height=5)
 plot(pc.chisq[,1], pc.chisq[,2], col=my.colors[map[,'LAYER']], cex=3, pch=16)
 dev.off()
+```
+
+Let's plot pairwise comparisons of the different distance metrics
+```{r eval=TRUE}
+d.vector.matrix <- cbind(as.numeric(d.euc), as.numeric(d.bray), as.numeric(as.dist(d.chisq)), as.numeric(as.dist(as.matrix(d.uuf))), as.numeric(as.dist(as.matrix(d.wuf))))
+colnames(d.vector.matrix) <- c('Euc','BC','ChiSq','UUF','WUF')
+pairs(d.vector.matrix)
+```
+
+And plot the pairwise pearson correlations
+```{r eval=TRUE}
+cor(d.vector.matrix)
 ```
 

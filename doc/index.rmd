@@ -26,3 +26,7 @@ https://github.com/danknights/mice8992-2016
 ###03. Loading QIIME data into R###
 [HTML](03.loading.data.into.R.html)   [PDF](03.loading.data.into.R.pdf)   
 
+###04. Beta diversity (guerrero negro)
+[HTML](../data/guerreronegro/analysis.html)   [PDF](../data/guerreronegro/analysis.pdf)  
+
+
