@@ -120,4 +120,4 @@ print_qiime_config.py
 5. Once you have the virtual machine running, you need to make sure the internet is working, that you can cut-and-paste text from your native OS to the virtual machine, and that you can share files between your native OS filesystem and the virtual machine. This means first installing the "Guest Additions", and then performing a few more steps, as described here: https://github.com/biocore/qiime/wiki/QIIME-Virtual-Box:-Before-you-start
 
 ## Next steps
-Now try running QIIME as described here: [02. First steps with QIIME](02.first.steps.with.qiime.html)
+Now try running QIIME as described here: [First steps with QIIME](first.steps.with.qiime.html)

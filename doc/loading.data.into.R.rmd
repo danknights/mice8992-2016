@@ -8,7 +8,7 @@ Back to [Table of Contents](index.html)
 
 **All of the code in this page is meant to be run in ```R``` unless otherwise specified.**
 
-After you have [installed QIIME](01.installing.qiime.html) and [generated an OTU table](02.first.steps.with.qiime.html), you can load the OTU table into R.
+After you have [installed QIIME](installing.qiime.html) and [generated an OTU table](first.steps.with.qiime.html), you can load the OTU table into R.
 
 Install biom package if not installed.
 ```{r eval=FALSE}
