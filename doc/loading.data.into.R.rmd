@@ -1,0 +1,97 @@
+---
+title: "Loading Microbiome Data"
+output:
+  html_document:
+    theme: united
+---
+Back to [Table of Contents](index.html)  
+
+**All of the code in this page is meant to be run in ```R``` unless otherwise specified.**
+
+After you have [installed QIIME](installing.qiime.html) and [generated an OTU table](first.steps.with.qiime.html), you can load the OTU table into R.
+
+Install biom package if not installed.
+```{r eval=FALSE}
+install.packages('biom',repo='http://cran.wustl.edu')
+```
+
+Load biom package
+```{r, echo=FALSE}
+library('biom')
+```
+
+Convert BIOM file to JSON format.  
+If you have data in a "new" BIOM format (HDF5), you first need to convert to JSON format first.
+
+**The following code is to be run on the command line.**
+```{r eval=FALSE, engine='bash'}
+# (Run on on the command-line, in the course repo)
+# make a JSON-formatted OTU table for loading into R
+cd data/globalgut-66-adults
+biom convert -i otu_table.biom -o otu_table_json.biom --to-json
+```
+
+Load global gut data using biom package
+```{r eval=TRUE}
+gg.otus.biom <- read_biom('../data/globalgut-66-adults/otu_table_json.biom')
+```
+
+Extract data matrix (OTU counts) from biom table
+```{r eval=TRUE}
+gg.otus <- as.matrix(biom_data(gg.otus.biom))
+
+# transpose so that rows are samples and columns are OTUs
+gg.otus <- t(gg.otus)
+```
+
+Plot histogram of sample depths
+```{r}
+depths <- rowSums(gg.otus)
+hist(depths,breaks=30)
+```
+
+Plot histogram of OTU frequencies
+```{r}
+otu.counts <- colSums(gg.otus > 0)
+hist(otu.counts,breaks=30)
+```
+
+Remove OTUs present in < 10% of samples
+```{r}
+gg.otus <- gg.otus[,colMeans(gg.otus > 0) >= .1]
+depths <- rowSums(gg.otus)
+dim(gg.otus)
+```
+
+Re-plot histogram of OTU frequencies now that we removed singletons
+```{r}
+otu.counts <- colSums(gg.otus > 0)
+hist(otu.counts,breaks=30)
+```
+
+Remove any samples with very low depth
+```{r}
+sort(depths)[1:10]
+gg.otus <- gg.otus[depths >= 1000,]
+dim(gg.otus)
+```
+
+Load mapping file
+```{r}
+gg.map <- read.table('../data/globalgut-66-adults/map.txt',sep='\t',head=T,row=1,check=F,comment='')
+
+```
+
+Ensure that mapping file and OTU table contain the sample samples in the same order
+```{r}
+sample.ids <- intersect(rownames(gg.otus), rownames(gg.map))
+
+# might as well put the samples in alphabetical order
+sample.ids <- sort(sample.ids)
+
+# in R you can subset using sample IDs or numerical indices. Most languages only use indices.
+gg.otus <- gg.otus[sample.ids,]
+gg.map <- gg.map[sample.ids,]
+dim(gg.otus)
+dim(gg.map)
+```

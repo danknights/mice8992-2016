@@ -1,0 +1,196 @@
+---
+title: "Day 8: Beta Diversity (Guerrero Negro)"
+output:
+  html_document:
+    theme: united
+    fig_width: 6
+    fig_height: 6
+  pdf_document:
+    fig_width: 6
+    fig_height: 6
+---
+Back to [Table of Contents](../../doc/index.html)  
+
+**All of the code in this page is meant to be run in ```R``` unless otherwise specified.**
+
+Install biom package and vegan package if not installed.
+```{r eval=FALSE}
+install.packages(c('biom','vegan'),repo='http://cran.wustl.edu')
+```
+
+Load biom package, load data
+```{r, eval=TRUE}
+library('biom')
+library('vegan')
+
+# load biom file
+otus.biom <- read_biom('otu_table_json.biom')
+
+# Extract data matrix (OTU counts) from biom table
+otus <- as.matrix(biom_data(otus.biom))
+
+# transpose so that rows are samples and columns are OTUs
+otus <- t(otus)
+
+# load mapping file
+map <- read.table('map.txt', sep='\t', comment='', head=T, row.names=1)
+```
+
+It is extremely important to ensure that your OTU table and metadata table sample IDs are lined up correctly.
+```{r, eval=TRUE}
+# see rownames of map and otus
+rownames(map)
+rownames(otus)
+
+# find the overlap
+common.ids <- intersect(rownames(map), rownames(otus))
+
+# get just the overlapping samples
+otus <- otus[common.ids,]
+map <- map[common.ids,]
+```
+
+See dimensions of OTU table
+```{r}
+dim(otus)
+```
+
+See dimensions of mapping file
+```{r}
+dim(map)
+```
+
+
+Get three different distances metrics
+```{r, eval=TRUE}
+
+# get Euclidean distance
+d.euc <- dist(otus)
+
+# get Bray-Curtis distances (default for Vegan)
+d.bray <- vegdist(otus)
+
+# get Chi-square distances using vegan command
+# we will extract chi-square distances from correspondence analysis
+my.ca <- cca(otus)
+d.chisq <- as.matrix(dist(my.ca$CA$u[,1:2]))
+
+```
+
+Now run principal coordinates embedding on the distance metrics
+```{r, eval=TRUE}
+
+# Run PCoA (not PCA)
+pc.euc <- cmdscale(d.euc, k=2)
+
+# Bray-Curtis principal coords
+pc.bray <- cmdscale(d.bray,k=2)
+
+# get first two dimensions of chi-square coordinates:
+pc.chisq <- my.ca$CA$u[,1:2]
+```
+
+Plot Euclidean distances with gradient colors
+```{r, eval=TRUE}
+# makes a gradient from red to blue
+my.colors <- colorRampPalette(c('red','blue'))(10)
+
+# plot Euclidean PCoA coords using color gradient
+# based on layer (1...10)
+layer <- map[,'LAYER']
+plot(pc.euc[,1], pc.euc[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+Plot Bray-Curtis distances with gradient colors
+```{r, eval=TRUE}
+
+# Plot Bray-Curtis PCoA
+plot(pc.bray[,1], pc.bray[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+Plot Chi-square distances with gradient colors
+```{r, eval=TRUE}
+
+# Plot Chi-square PCoA
+plot(pc.chisq[,1], pc.chisq[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+## Visualizing UniFrac distances
+Calculate UniFrac distances in QIIME  
+```{r, eval=FALSE}
+# Note: This command is on the command line, not in R
+# (load macqiime if necessary)
+beta_diversity.py -i otu_table.biom -o beta -t ../ref/greengenes/97_otus.tree
+```
+
+
+Load UniFrac distances, calculate PCoA
+```{r, eval=TRUE}
+# load unweighted and weighted unifrac
+d.uuf <- read.table('beta/unweighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
+d.wuf <- read.table('beta/weighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
+
+# ensure that these last two matrices have the same samples in the 
+# same order as the metadata table
+d.uuf <- d.uuf[common.ids, common.ids]
+d.wuf <- d.wuf[common.ids, common.ids]
+
+# get first two dimensions of unifrac PCoA:
+pc.uuf <- cmdscale(d.uuf, k=2)
+pc.wuf <- cmdscale(d.wuf, k=2)
+```
+
+Plot unweighted UniFrac distances with gradient colors
+```{r, eval=TRUE}
+
+plot(pc.uuf[,1], pc.uuf[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+Plot weighted UniFrac distances with gradient colors
+```{r, eval=TRUE}
+
+plot(pc.wuf[,1], pc.wuf[,2], col=my.colors[layer], cex=3, pch=16)
+```
+
+Note: to make a PDF:
+```{r, eval=FALSE}
+pdf("chisq.pdf",width=5,height=5)
+plot(pc.chisq[,1], pc.chisq[,2], col=my.colors[map[,'LAYER']], cex=3, pch=16)
+dev.off()
+```
+
+Let's plot pairwise comparisons of the different distance metrics
+```{r eval=TRUE}
+d.vector.matrix <- cbind(as.numeric(d.euc), as.numeric(d.bray), as.numeric(as.dist(d.chisq)), as.numeric(as.dist(as.matrix(d.uuf))), as.numeric(as.dist(as.matrix(d.wuf))))
+colnames(d.vector.matrix) <- c('Euc','BC','ChiSq','UUF','WUF')
+pairs(d.vector.matrix)
+```
+
+And display the pairwise pearson correlations
+```{r eval=TRUE}
+cor(d.vector.matrix)
+```
+
+Which distance metric best recovered physical sample distances based on END_DEPTH?
+```{R eval=TRUE}
+
+# y is the euclidean distance matrix based on ending depth of each layer
+y <- as.vector(dist(map$END_DEPTH))
+
+# Test the correlation of END_DEPTH distance and ecological distance
+# for each metric
+metrics <- list(d.euc, d.bray, d.chisq, d.uuf, d.wuf)
+names(metrics) <- colnames(d.vector.matrix) # reuse pairwise column names
+
+for(i in 1:length(metrics)){
+    d.name <- names(metrics)[i]
+
+    # convert distance matrix to vector form
+    d <- as.vector(as.dist(metrics[[i]]))
+
+    cat('Correlation of ',d.name,':','\n',sep='')
+    print(cor.test(d, y, method='spear', exact=FALSE))
+}
+```
+
+Note that Chi-square has the highest correlation with END_DEPTH.

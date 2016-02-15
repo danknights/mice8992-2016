@@ -2,32 +2,35 @@
 title: "Discovering Patterns in the Microbiome"
 output:
   html_document:
-    theme: united
+    theme: default
+    toc: true
+    number_sections: yes
 ---
 
-## Course code browser
+# Course information
+Course code browser
 MiCE 8992, Spring 2016  
 Copyright Dan Knights, 2016  
 University of Minnesota  
 http://www.knightslab.org
 
-The Github repo for this code is https://github.com/danknights/mice8992-2016.
+Table of Contents
 
-# Table of Contents
+The Github repo for this code is https://github.com/danknights/mice8992-2016
 
-###Course Github repository###
-https://github.com/danknights/mice8992-2016
+#Installing QIIME
+[HTML](installing.qiime.html)   [PDF](installing.qiime.pdf)   
 
-###01. Installing QIIME###
-[HTML](01.installing.qiime.html)   [PDF](01.installing.qiime.pdf)   
+#First steps with QIIME
+[HTML](first.steps.with.qiime.html)   [PDF](first.steps.with.qiime.pdf)   
 
-###02. First steps with QIIME###
-[HTML](02.first.steps.with.qiime.html)   [PDF](02.first.steps.with.qiime.pdf)   
+#Picking OTUs (guerrero negro)
+[HTML](../data/guerreronegro/OTU.picking.html)   [PDF](../data/guerreronegro/OTU.picking.pdf)  
 
-###03. Loading QIIME data into R###
-[HTML](03.loading.data.into.R.html)   [PDF](03.loading.data.into.R.pdf)   
+#Loading QIIME data into R
+[HTML](loading.data.into.R.html)   [PDF](loading.data.into.R.pdf)   
 
-###04. Beta diversity (guerrero negro)
-[HTML](../data/guerreronegro/analysis.html)   [PDF](../data/guerreronegro/analysis.pdf)  
+#Beta diversity (guerrero negro)
+[HTML](../data/guerreronegro/beta.diversity.html)   [PDF](../data/guerreronegro/beta.diversity.pdf)  
 
 

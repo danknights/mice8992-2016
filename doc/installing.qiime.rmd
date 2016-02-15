@@ -1,0 +1,123 @@
+---
+title: "Installing QIIME"
+output:
+  html_document:
+    theme: united
+    toc: true
+  pdf_document:
+    toc: true
+---
+
+Back to [Table of Contents](index.html)  
+
+**All of the code in this page is meant to be run on the command line.**
+
+## Using QIIME on MSI
+1. Connect to MSI using Terminal on Mac/Linux, or putty on Windows, download here: http://www.putty.org/
+```{r eval=FALSE, enging='bash'}
+ssh yourusername@login.msi.umn.edu
+```
+
+2. Tell MSI where to look for the working QIIME installation  
+Run the following commands one time:
+```{r eval=FALSE, engine='bash'}
+echo "export PYTHONPATH=/home/knightsd/public/lib/qiime_1.9.1/lib/python:\$PYTHONPATH" >> ~/.bash_profile
+echo "export PATH=/home/knightsd/public/lib/qiime_1.9.1/bin:\$PATH" >> ~/.bash_profile
+echo "export LD_LIBRARY_PATH=/home/knightsd/public/lib/qiime_1.9.1/lib/qhull-2012.1/lib:\$LD_LIBRARY_PATH" >> ~/.bash_profile
+```
+
+3. Log in to an interactive node, making sure you have enough time and memory
+```{r eval=FALSE, engine='bash'}
+isub -n nodes=1:ppn=4 -m 16GB -w 24:00:00
+```
+
+4. Verify that your environmental variables were set correctly.  
+You should see that each of these variables has "/home/knightsd/public/lib/qiime_1.9.1/<plus some other stuff>" somewhere in it.
+```{r eval=FALSE, engine='bash'}
+echo $PYTHONPATH
+echo $PATH
+echo $LD_LIBRARY_PATH
+```
+
+5. Load the correct python module
+```{r eval=FALSE, engine='bash'}
+module load python/2.7.1
+```
+
+6. Test QIIME
+```{r eval=FALSE, engine='bash'}
+print_qiime_config.py
+```
+
+In the future, you only need to do steps 1, 3, and 5.
+
+Helpful tips:  
+This link shows you the options for different queues and resources at MSI:  
+http://msi-riss.readthedocs.org/en/latest/msi/msi-queues.html
+
+This link shows current usage of queues at MSI, updated every 15 minutes:  
+https://s3.msi.umn.edu/pbsnodes/index.html
+
+
+##Installing QIIME on Linux
+
+Tested on Ubuntu MATE 15.10
+
+```{r test-bash, engine='bash', eval=FALSE}
+# system dependencies
+sudo apt-get install build-essential python-dev python-pip
+
+# Get ready for matplotlib
+# http://stackoverflow.com/questions/20533426/ubuntu-running-pip-install-gives-error-the-following-required-packages-can-no
+sudo apt-get install libfreetype6-dev
+
+# Get ready to install numpy and scipy
+# http://stackoverflow.com/questions/11114225/installing-scipy-and-numpy-using-pip
+sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran
+
+pip install numpy
+pip install qiime
+
+# Note: on my installation, the QIIME binaries were placed in $HOME/.local/bin/
+# so I added that dir to my PATH environment variable:
+echo "export PATH=\$HOME/.local/bin:\$PATH" >> ~/.bashrc
+echo "export PATH=\$HOME/.local/bin:\$PATH" >> ~/.bash_profile
+
+# restart terminal then test:
+print_qiime_config.py -h
+
+```
+
+## Installing QIIME on Mac using macqiime
+Tested on Mac OSX El Capitan 10.11.3
+
+```{r engine='bash', eval=FALSE}
+# extract file
+tar xvzf MacQIIME_1.9.1-20150604_OS10.7.tgz
+
+# enter the directory
+cd MacQIIME_1.9.1-20150604_OS10.7
+
+
+# For El Capitan only (not earlier mac OS versions),
+# Download the custom install script shown here, and follow the instructions:
+https://groups.google.com/d/msg/qiime-forum/N2aZIPrsb_o/SdHXBIylCAAJ
+
+# run the install script.
+# it should request your administrator password.
+./install.s
+
+# Try it out
+macqiime
+print_qiime_config.py
+```
+
+## Using QIIME virtual machine on Windows/Mac/Linux
+1. Download and install VirtualBox: https://www.virtualbox.org/wiki/Downloads
+2. Download and open the QIIME virtualbox image: http://qiime.org/install/virtual_box.html
+3. Follow instructions at http://qiime.org/install/virtual_box.html
+4. Note: to start the QIIME virtual machine you will need to run VirtualBox, and create a "new" virtual machine. The option for "Type" is "Linux". The option for "Version" should be "Ubuntu (64 bit)". If you only see 32-bit options, then visit this web page and try the fix: http://www.fixedbyvonnie.com/2014/11/virtualbox-showing-32-bit-guest-versions-64-bit-host-os. A similar solution is described here: http://qiime.org/install/virtual_box.html
+5. Once you have the virtual machine running, you need to make sure the internet is working, that you can cut-and-paste text from your native OS to the virtual machine, and that you can share files between your native OS filesystem and the virtual machine. This means first installing the "Guest Additions", and then performing a few more steps, as described here: https://github.com/biocore/qiime/wiki/QIIME-Virtual-Box:-Before-you-start
+
+## Next steps
+Now try running QIIME as described here: [First steps with QIIME](first.steps.with.qiime.html)

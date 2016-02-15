@@ -1,0 +1,75 @@
+---
+title: "First steps with QIIME"
+output:
+  html_document:
+    theme: united
+    toc: true
+  pdf_document:
+    toc: true
+---
+Back to [Table of Contents](index.html)  
+
+**All of the code in this page is meant to be run on the command line.**
+
+## Running the QIIME tutorial
+After you have gotten QIIME working [as described](installing.qiime.html), you are ready to try out QIIME.
+
+A good first step is to follow the QIIME tutorial here: http://qiime.org/tutorials/tutorial.html
+
+Note: you can download files directly to MSI or your Linux computer from the command line with ```wget ftp://ftp.microbio.me/pub/qiime-files/qiime_overview_tutorial.zip```.
+
+## Running QIIME on class data
+You can also run QIIME on the global gut data in the Course repository. First download the repository and data:
+```{r eval=FALSE, engine='bash'}
+git clone https://github.com/danknights/mice8992-2016.git repo
+```
+
+For example, move to the globalgut-66-adults data directory:
+```{r eval=FALSE, engine='bash'}
+cd repo
+cd data
+cd globalgut-66-adults
+```
+
+This directory contains sequences from 66 adults in 3 countries (Yatsunenko et. al. Nature 2012). Then run OTU picking and core QIIME analyes:  
+```{r eval=FALSE, engine='bash'}
+# pick closed reference OTUs
+time pick_closed_reference_otus.py -i seqs.fna -o closedref
+
+# run core QIIME diversity analyses on closed-reference OTU table
+time core_diversity_analyses.py -i closedref/otu_table.biom -m map.txt -o closedref/corediv -e 500 --tree_fp closedref/97_otus.tree -v
+
+# pick de novo OTUs
+time pick_de_novo_otus.py -i seqs.fna -o denovo
+
+# run core QIIME diversity analyses on de novo OTU table
+time core_diversity_analyses.py -i denovo/otu_table.biom -m map.txt -o denovo/corediv -e 500 --tree_fp denovo/rep_set.tre
+```
+
+You can then open the "index.html" file in the output folder in your favorite web browser, and click to see the results of the analysis. In Chrome you may need to open Chrome first, and then choose "File-->Open File...". For the Global Gut data set, click on "index.html" next to PCoA plot (weighted_unifrac). Then click the "Colors" tab in the upper right and select "COUNTRY" by which to color the points.
+
+## Picking OTUs
+
+Move to the Guerrero Negro data directory. This directory contains sequences from different depths in the Guerrero Negro microbial in Mexico (Harris JK **et al.** ISME J. 2013 Jan;7(1):50-60).
+```{r eval=TRUE, engine='bash'}
+
+# To be run on the command line
+cd ../data/guerreronegro
+
+
+```
+
+```{r eval=TRUE, engine='bash', results='markup'}
+# Get usage information and list of options (be sure QIIME is loaded first)
+cd ../data/guerreronegro
+ls
+```
+
+```{r eval=TRUE, engine='bash'}
+# pick_closed_reference_otus.py is a "workflow" script that runs other scripts
+# 
+# Ask pick_closed_reference_otus.py to print the other commands it would run
+#pick_closed_reference_otus.py -i seqs.fna -o closeref -f –w
+
+```
+

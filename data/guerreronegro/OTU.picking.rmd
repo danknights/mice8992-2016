@@ -1,0 +1,176 @@
+---
+title: "OTU Picking"
+output:
+  html_document:
+    theme: default
+    toc: true
+  pdf_document:
+    toc: true
+---
+Back to [Table of Contents](index.html)  
+
+**All of the code in this page is meant to be run on the command line.**
+
+# Getting usage info from QIIME scripts
+
+First let's move to the Guerrero Negro data directory. This directory contains sequences from different depths in the Guerrero Negro microbial in Mexico (Harris JK **et al.** ISME J. 2013 Jan;7(1):50-60).
+```{r eval=FALSE, engine='bash'}
+# To be run on the command line
+# you will need to put your correct path here
+cd /your/path/to/8992repo/data/guerreronegro
+```
+
+We are going to run closed reference OTU picking, but first let's get usage
+information and list of options (be sure QIIME is loaded first)
+```{r eval=TRUE, engine='bash'}
+pick_closed_reference_otus.py -h
+```
+
+`pick_closed_reference_otus.py` is a "workflow" script that runs other scripts.
+
+Ask pick_closed_reference_otus.py to print the other commands it would run.
+The `-f` tells it to force overwriting the directory closedref, in case
+that directory is already there. The `-r` tells it where the reference
+sequences are. The `-t` tells it where the reference taxonomy map is.
+
+```{r eval=TRUE, engine='bash'}
+pick_closed_reference_otus.py -i seqs.fna -o closedref -f -r ../ref/greengenes/97_otus.fasta -t ../ref/greengenes/97_otu_taxonomy.txt -w 
+```
+
+# Picking closed reference OTUs with QIIME
+Now actually run the script. The `-v` tells it to be "verbose", printing
+updates as it runs. Use `time` to report how long it takes.
+```{r eval=TRUE, engine='bash'}
+time pick_closed_reference_otus.py -i seqs.fna -o closedref -r ../ref/greengenes/97_otus.fasta -t ../ref/greengenes/97_otu_taxonomy.txt -f -v
+```
+
+# Picking closed-reference OTUs with NINJA-OPS
+Compare to NINJA-OPS. Installation instructions are at https://github.com/GabeAl/NINJA-OPS.
+Note NINJA-OPS is much faster.
+```{r eval=FALSE, engine='bash'}
+time python /path/to/your/ninja/directory/bin/ninja.py -i seqs.fna -o ninja
+```
+
+```{r eval=TRUE, echo=FALSE, engine='bash'}
+time ninja.py -i seqs.fna -o ninja
+```
+
+Find out how many sequences were assigned ("Total count")
+by uclust_ref (QIIME default)
+and how many with NINJA-OPS using the `biom summarize-table` command.
+```{r eval=TRUE, engine='bash'}
+biom summarize-table -i closedref/otu_table.biom > closedref/stats.txt
+head closedref/stats.txt
+```
+
+```{r eval=TRUE, engine='bash'}
+biom summarize-table -i ninja/ninja_otutable.biom > ninja/stats.txt
+head ninja/stats.txt
+```
+
+Try NINJA-OPS on the Global Gut data set. It can process 1 million
+sequences in the Global Gut data set in under 20 seconds on a Macbook.
+```{r eval=FALSE, engine='bash'}
+cd ../globalgut
+time python /path/to/your/ninja/directory/bin/ninja.py -i seqs.fna -o ninja
+```
+
+```{r eval=TRUE, echo=FALSE, engine='bash'}
+cd ../globalgut
+time ninja.py -i seqs.fna -o ninja
+```
+
+# Picking de novo OTUs with QIIME
+Run the workflow script, `pick_de_novo_otus.py` with `-w` to print the
+basic commands it would run.
+```{r eval=TRUE, engine='bash'}
+cd ../guerreronegro
+pick_de_novo_otus.py -i seqs.fna -o openref -f -w 
+```
+
+Now actually run the script. Note that the OTU picking step is quick
+on this data set. The other steps will take a long time (more than 10 minutes).
+So instead, kill the script by typing `ctrl-c`.
+```{r eval=FALSE, engine='bash'}
+pick_de_novo_otus.py -i seqs.fna -o openref -f -v
+```
+
+Instead let's just run the pick_otus.py step, with several different OTU
+picking methods.
+```{r eval=TRUE, engine='bash'}
+time pick_otus.py -i seqs.fna -o uclust -m uclust
+make_otu_table.py -i uclust/seqs_otus.txt -o uclust/otu_table.biom
+biom summarize-table -i uclust/otu_table.biom | head -n 5
+```
+
+```{r eval=TRUE, engine='bash'}
+time pick_otus.py -i seqs.fna -o swarm -m swarm
+make_otu_table.py -i swarm/seqs_otus.txt -o swarm/otu_table.biom
+biom summarize-table -i swarm/otu_table.biom | head -n 5
+```
+
+```{r eval=TRUE, engine='bash'}
+time pick_otus.py -i seqs.fna -o cdhit -m cdhit
+make_otu_table.py -i cdhit/seqs_otus.txt -o cdhit/otu_table.biom
+biom summarize-table -i cdhit/otu_table.biom | head -n 5
+```
+
+```{r eval=TRUE, engine='bash'}
+time pick_otus.py -i seqs.fna -o sumaclust -m sumaclust
+make_otu_table.py -i sumaclust/seqs_otus.txt -o sumaclust/otu_table.biom
+biom summarize-table -i sumaclust/otu_table.biom | head -n 5
+```
+
+# Customizing workflow scripts
+We can customize workflow scripts using a parameter file. You will need some kind
+of text editor to edit the parameter file, such as Notepad or Notepad++ for
+Windows, TextWrangler or Sublime for Mac, or Emacs or vi for the Mac/Linux
+command line. For more information, please see the official QIIME explaining
+parameter files here:
+http://qiime.org/documentation/qiime_parameters_files.html. 
+
+
+For example, let's assume we want to customize the OTU picking method
+used by (`pick_otus.py`) as part of the `pick_de_novo_otus.py` workflow,
+changing it from the default `uclust` to `swarm`.
+To find the parameter name, we can either run `pick_otus.py -h` or
+read the description at qiime.org: http://qiime.org/scripts/pick_otus.html
+(found by Googling **QIIME pick_otus.py**). We see that the parameter we need is
+called `otu_picking_method`, and that the valid options are `sortmerna, mothur,
+trie, uclust_ref, usearch, usearch_ref, blast, usearch61, usearch61_ref,
+sumaclust, swarm, prefix_suffix, cdhit, uclust`.
+
+Therefore we need to add `pick_otus:otu_picking_method swarm` to a text file.
+This can be done with emacs as follows, if you have emacs on your system:
+```{r eval=FALSE, engine='bash'}
+emacs parameters-swarm.txt
+```
+
+Then add these lines to the top of the file:
+```{r eval=FALSE, engine='bash'}
+pick_otus:otu_picking_method swarm 
+pick_otus:similarity .99 
+```
+
+Then save the file with `ctrl-x ctrl-s`, then exit with `ctrl-x ctrl-c`.
+
+Now we can run the workflow script with the custom parameters file:
+```{r eval=FALSE, engine='bash'}
+pick_de_novo_otus.py -i seqs.fna -o swarm99 -p parameters-swarm.txt
+```
+
+# Making OTU tables human-readable
+You can convert OTU tables to tab-delimited output using `biom convert`:
+```{r eval=FALSE, engine='bash'}
+biom convert -i closedref/otu_table.biom -o closedref/otu_table.txt --to-tsv
+```
+The output file can now be opened in Excel.
+
+
+# Follow-up exercises
+1. How can you use `filter_otus_from_otu_table.py` to determine the number
+of singleton OTUs produced by each OTU picking method?
+2. How many OTUs remain from each method after filtering singletons? 
+3. Run OTU picking on another data set from [EBI](http://www.ebi.ac.uk/services)
+or [QIITA](http://qiita.ucsd.edu).
+4. Try (loading OTU tables into R)[]
