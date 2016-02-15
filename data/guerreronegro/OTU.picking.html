@@ -194,9 +194,9 @@ cd /your/path/to/8992repo/data/guerreronegro</code></pre>
 ## Make OTU table
 ## make_otu_table.py -i closedref/uclust_ref_picked_otus/seqs_otus.txt -t ../ref/greengenes/97_otu_taxonomy.txt -o closedref/otu_table.biom 
 ## 
-## real 0m33.343s
-## user 0m28.623s
-## sys  0m2.353s</code></pre>
+## real 0m35.524s
+## user 0m29.738s
+## sys  0m3.114s</code></pre>
 </div>
 <div id="picking-closed-reference-otus-with-ninja-ops" class="section level1">
 <h1>Picking closed-reference OTUs with NINJA-OPS</h1>
@@ -205,32 +205,31 @@ cd /your/path/to/8992repo/data/guerreronegro</code></pre>
 <pre><code>## Ninja 1.3.1
 ## Ninja database directory is is/Users/danknights/Copy/research/ninja/src/databases/greengenes97
 ## Running Ninja filter...
-## &quot;/Users/danknights/Copy/research/ninja/src/bin/ninja_filter_mac&quot; &quot;seqs.fna&quot; &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/guerreronegro/ninja/ninja&quot;   D 1
+## &quot;/Users/danknights/Copy/research/ninja/src/bin/ninja_filter_mac&quot; &quot;seqs.fna&quot; &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/guerreronegro/ninja/ninja&quot;   D 1
 ## Not using paired-end reads 
 ## Performing NINJA replicon-denoising at 1 compacted reads.
-## WARNING: Found 1 sequences with ambiguity (1 ambiguous bases).
 ## Number of sequences: 27389
-## Total reads considered: 27388
+## Total reads considered: 27389
 ## 
 ## DONE SORTING. 
 ## 18 Samples found.
-## Ninja filter time: 0.079341173172
+## Ninja filter time: 0.102918863297
 ## Running Bowtie...
-## bowtie2-align-s --no-head -x /Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97 -S &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/guerreronegro/ninja/alignments.txt&quot; --np 0 --mp &quot;1,1&quot; --rdg &quot;0,1&quot; --rfg &quot;0,1&quot; --score-min &quot;L,0,-0.03&quot; --norc -f &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/guerreronegro/ninja/ninja_filt.fa&quot; -p 4 -k 1
+## bowtie2-align-s --no-head -x /Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97 -S &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/guerreronegro/ninja/alignments.txt&quot; --np 0 --mp &quot;1,1&quot; --rdg &quot;0,1&quot; --rfg &quot;0,1&quot; --score-min &quot;L,0,-0.03&quot; --norc -f &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/guerreronegro/ninja/ninja_filt.fa&quot; -p 4 -k 1
 ## 
-## Bowtie time: 6.09285497665
+## Bowtie time: 5.66104602814
 ## Running Ninja parse...
-## &quot;/Users/danknights/Copy/research/ninja/src/bin/ninja_parse_filtered_mac&quot; &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/guerreronegro/ninja/ninja&quot; &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/guerreronegro/ninja/alignments.txt&quot; &quot;/Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97.db&quot; &quot;/Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97.taxonomy&quot;
-## Opened /Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/guerreronegro/ninja/ninja_otutable.biom for OTU Table writing
+## &quot;/Users/danknights/Copy/research/ninja/src/bin/ninja_parse_filtered_mac&quot; &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/guerreronegro/ninja/ninja&quot; &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/guerreronegro/ninja/alignments.txt&quot; &quot;/Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97.db&quot; &quot;/Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97.taxonomy&quot;
+## Opened /Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/guerreronegro/ninja/ninja_otutable.biom for OTU Table writing
 ## Total OTUs available: 99322
-## Number of unique samples: 18, max reads: 14792
-## Total reads expanded: 23141
+## Number of unique samples: 18, max reads: 14793
+## Total reads expanded: 23138
 ## Run complete.
-## Ninja parse time: 0.148586988449
+## Ninja parse time: 0.149030923843
 ## 
-## real 0m6.391s
-## user 0m11.688s
-## sys  0m0.511s</code></pre>
+## real 0m5.996s
+## user 0m12.799s
+## sys  0m0.645s</code></pre>
 <p>Find out how many sequences were assigned (“Total count”) by uclust_ref (QIIME default) and how many with NINJA-OPS using the <code>biom summarize-table</code> command.</p>
 <pre class="bash"><code>biom summarize-table -i closedref/otu_table.biom &gt; closedref/stats.txt
 head closedref/stats.txt</code></pre>
@@ -247,22 +246,22 @@ head closedref/stats.txt</code></pre>
 <pre class="bash"><code>biom summarize-table -i ninja/ninja_otutable.biom &gt; ninja/stats.txt
 head ninja/stats.txt</code></pre>
 <pre><code>## Num samples: 18
-## Num observations: 2130
-## Total count: 23141
+## Num observations: 2131
+## Total count: 23138
 ## Table density (fraction of non-zero values): 0.193
 ## 
 ## Counts/sample summary:
-##  Min: 960.0
-##  Max: 1775.0
+##  Min: 962.0
+##  Max: 1773.0
 ##  Median: 1276.000
-##  Mean: 1285.611</code></pre>
+##  Mean: 1285.444</code></pre>
 <p>Try NINJA-OPS on the Global Gut data set. It can process 1 million sequences in the Global Gut data set in under 20 seconds on a Macbook.</p>
 <pre class="bash"><code>cd ../globalgut
 time python /path/to/your/ninja/directory/bin/ninja.py -i seqs.fna -o ninja</code></pre>
 <pre><code>## Ninja 1.3.1
 ## Ninja database directory is is/Users/danknights/Copy/research/ninja/src/databases/greengenes97
 ## Running Ninja filter...
-## &quot;/Users/danknights/Copy/research/ninja/src/bin/ninja_filter_mac&quot; &quot;seqs.fna&quot; &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/globalgut/ninja/ninja&quot;   D 1
+## &quot;/Users/danknights/Copy/research/ninja/src/bin/ninja_filter_mac&quot; &quot;seqs.fna&quot; &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/globalgut/ninja/ninja&quot;   D 1
 ## Not using paired-end reads 
 ## Performing NINJA replicon-denoising at 1 compacted reads.
 ## Number of sequences: 1000000
@@ -270,23 +269,23 @@ time python /path/to/your/ninja/directory/bin/ninja.py -i seqs.fna -o ninja</cod
 ## 
 ## DONE SORTING. 
 ## 489 Samples found.
-## Ninja filter time: 2.08193898201
+## Ninja filter time: 2.37122702599
 ## Running Bowtie...
-## bowtie2-align-s --no-head -x /Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97 -S &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/globalgut/ninja/alignments.txt&quot; --np 0 --mp &quot;1,1&quot; --rdg &quot;0,1&quot; --rfg &quot;0,1&quot; --score-min &quot;L,0,-0.03&quot; --norc -f &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/globalgut/ninja/ninja_filt.fa&quot; -p 4 -k 1
+## bowtie2-align-s --no-head -x /Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97 -S &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/globalgut/ninja/alignments.txt&quot; --np 0 --mp &quot;1,1&quot; --rdg &quot;0,1&quot; --rfg &quot;0,1&quot; --score-min &quot;L,0,-0.03&quot; --norc -f &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/globalgut/ninja/ninja_filt.fa&quot; -p 4 -k 1
 ## 
-## Bowtie time: 16.6252119541
+## Bowtie time: 20.7786400318
 ## Running Ninja parse...
-## &quot;/Users/danknights/Copy/research/ninja/src/bin/ninja_parse_filtered_mac&quot; &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/globalgut/ninja/ninja&quot; &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/globalgut/ninja/alignments.txt&quot; &quot;/Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97.db&quot; &quot;/Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97.taxonomy&quot;
-## Opened /Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/globalgut/ninja/ninja_otutable.biom for OTU Table writing
+## &quot;/Users/danknights/Copy/research/ninja/src/bin/ninja_parse_filtered_mac&quot; &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/globalgut/ninja/ninja&quot; &quot;/Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/globalgut/ninja/alignments.txt&quot; &quot;/Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97.db&quot; &quot;/Users/danknights/Copy/research/ninja/src/databases/greengenes97/greengenes97.taxonomy&quot;
+## Opened /Users/danknights/Dropbox/docs/teaching/mice8992-2016-spring/repo/data/globalgut/ninja/ninja_otutable.biom for OTU Table writing
 ## Total OTUs available: 99322
 ## Number of unique samples: 489, max reads: 117369
 ## Total reads expanded: 942750
 ## Run complete.
-## Ninja parse time: 0.553560972214
+## Ninja parse time: 0.836696147919
 ## 
-## real 0m19.317s
-## user 0m51.635s
-## sys  0m1.356s</code></pre>
+## real 0m24.059s
+## user 0m55.167s
+## sys  0m1.835s</code></pre>
 </div>
 <div id="picking-de-novo-otus-with-qiime" class="section level1">
 <h1>Picking de novo OTUs with QIIME</h1>
@@ -307,9 +306,9 @@ pick_de_novo_otus.py -i seqs.fna -o openref -f -w </code></pre>
 make_otu_table.py -i uclust/seqs_otus.txt -o uclust/otu_table.biom
 biom summarize-table -i uclust/otu_table.biom | head -n 5</code></pre>
 <pre><code>## 
-## real 0m2.752s
-## user 0m2.381s
-## sys  0m0.307s
+## real 0m3.759s
+## user 0m2.903s
+## sys  0m0.481s
 ## Num samples: 18
 ## Num observations: 4074
 ## Total count: 27389
@@ -317,76 +316,21 @@ biom summarize-table -i uclust/otu_table.biom | head -n 5</code></pre>
 <pre class="bash"><code>time pick_otus.py -i seqs.fna -o swarm -m swarm
 make_otu_table.py -i swarm/seqs_otus.txt -o swarm/otu_table.biom
 biom summarize-table -i swarm/otu_table.biom | head -n 5</code></pre>
-<pre><code>## Traceback (most recent call last):
-##   File &quot;/macqiime/anaconda/bin/pick_otus.py&quot;, line 1004, in &lt;module&gt;
-##     main()
-##   File &quot;/macqiime/anaconda/bin/pick_otus.py&quot;, line 995, in main
-##     result_path=result_path, log_path=log_path)
-##   File &quot;/macqiime/anaconda/lib/python2.7/site-packages/qiime/pick_otus.py&quot;, line 774, in __call__
-##     HALT_EXEC=False)
-##   File &quot;/macqiime/anaconda/lib/python2.7/site-packages/bfillings/swarm_v127.py&quot;, line 294, in swarm_denovo_cluster
-##     clusters = swarm(seq_path)
-##   File &quot;/macqiime/anaconda/lib/python2.7/site-packages/bfillings/swarm_v127.py&quot;, line 77, in __call__
-##     super(Swarm, self).__call__(seq_path)
-##   File &quot;/macqiime/anaconda/lib/python2.7/site-packages/burrito/util.py&quot;, line 285, in __call__
-##     'StdErr:\n%s\n' % open(errfile).read())
-## burrito.util.ApplicationError: Unacceptable application exit status: 1
-## Command:
-## cd &quot;/Users/danknights/Copy/docs/teaching/2016-spring/MiCE 8992/repo/data/guerreronegro/&quot;; swarm -d 1 -o &quot;/tmp/temp_otumap_KjdSz8.swarm&quot; -t 1 /tmp/SwarmExactMatchFilterJg9xS2.fasta &gt; &quot;/tmp/tmpGcPUn3mVxQ932HFm0Of6.txt&quot; 2&gt; &quot;/tmp/tmpEdtAeZv6o9mHrFoL3sN4.txt&quot;
-## StdOut:
-## 
-## StdErr:
-## Swarm 1.2.19 [Jun  2 2015 14:40:16]
-## Copyright (C) 2012-2014 Torbjorn Rognes and Frederic Mahe
-## https://github.com/torognes/swarm
-## 
-## Please cite: Mahe F, Rognes T, Quince C, de Vargas C, Dunthorn M (2014)
-## Swarm: robust and fast clustering method for amplicon-based studies.
-## PeerJ 2:e593 http://dx.doi.org/10.7717/peerj.593
-## 
-## CPU features:      mmx sse sse2 sse3 ssse3 sse4.1 sse4.2 popcnt avx avx2
-## Database file:     /tmp/SwarmExactMatchFilterJg9xS2.fasta
-## Output file:       /tmp/temp_otumap_KjdSz8.swarm
-## Resolution (d):    1
-## Threads:           1
-## Algorithm:         regular
-## Scores:            match: 5, mismatch: -4
-## Gap penalties:     opening: 12, extension: 4
-## Converted costs:   mismatch: 9, gap opening: 12, gap extension: 7
-## 
-## Reading database:  0%Error: Illegal character 'N' in sequence on line 2
-## 
-## 
-## 
-## real 0m1.459s
-## user 0m1.184s
-## sys  0m0.246s
-## Error in make_otu_table.py: option -i: file does not exist: 'swarm/seqs_otus.txt'
-## 
-## If you need help with QIIME, see:
-## http://help.qiime.org
-## Usage: biom summarize-table [options] {-i/--input-fp INPUT-FP}
-## 
-## [] indicates optional input (order unimportant)
-## {} indicates required input (order unimportant)
-## 
-## Provides details on the observation counts per sample, including summary statistics, as well as metadata categories associated with samples and observations.
-## 
-## Example usage: 
-## Print help message and exit
-##  biom summarize-table -h
-## 
-## Basic script usage: Write a summary of table.biom to table_summary.txt
-##  biom summarize-table -i table.biom -o table_summary.txt
-## 
-## biom summarize-table: error: option -i: file does not exist: 'swarm/otu_table.biom'</code></pre>
+<pre><code>## 
+## real 0m4.503s
+## user 0m3.788s
+## sys  0m0.494s
+## Num samples: 18
+## Num observations: 10025
+## Total count: 27389
+## Table density (fraction of non-zero values): 0.075</code></pre>
 <pre class="bash"><code>time pick_otus.py -i seqs.fna -o cdhit -m cdhit
 make_otu_table.py -i cdhit/seqs_otus.txt -o cdhit/otu_table.biom
 biom summarize-table -i cdhit/otu_table.biom | head -n 5</code></pre>
 <pre><code>## 
-## real 0m26.530s
-## user 0m25.506s
-## sys  0m0.660s
+## real 0m30.006s
+## user 0m27.645s
+## sys  0m1.014s
 ## Num samples: 18
 ## Num observations: 4520
 ## Total count: 27389
@@ -395,32 +339,13 @@ biom summarize-table -i cdhit/otu_table.biom | head -n 5</code></pre>
 make_otu_table.py -i sumaclust/seqs_otus.txt -o sumaclust/otu_table.biom
 biom summarize-table -i sumaclust/otu_table.biom | head -n 5</code></pre>
 <pre><code>## 
-## real 1m0.190s
-## user 0m58.294s
-## sys  0m0.827s
-## Traceback (most recent call last):
-##   File &quot;/macqiime/anaconda/bin/make_otu_table.py&quot;, line 119, in &lt;module&gt;
-##     main()
-##   File &quot;/macqiime/anaconda/bin/make_otu_table.py&quot;, line 115, in main
-##     write_biom_table(biom_otu_table, opts.output_biom_fp)
-##   File &quot;/macqiime/anaconda/lib/python2.7/site-packages/qiime/util.py&quot;, line 569, in write_biom_table
-##     &quot;Attempting to write an empty BIOM table to disk. &quot;
-## qiime.util.EmptyBIOMTableError: Attempting to write an empty BIOM table to disk. QIIME doesn't support writing empty BIOM output files.
-## Usage: biom summarize-table [options] {-i/--input-fp INPUT-FP}
-## 
-## [] indicates optional input (order unimportant)
-## {} indicates required input (order unimportant)
-## 
-## Provides details on the observation counts per sample, including summary statistics, as well as metadata categories associated with samples and observations.
-## 
-## Example usage: 
-## Print help message and exit
-##  biom summarize-table -h
-## 
-## Basic script usage: Write a summary of table.biom to table_summary.txt
-##  biom summarize-table -i table.biom -o table_summary.txt
-## 
-## biom summarize-table: error: option -i: file does not exist: 'sumaclust/otu_table.biom'</code></pre>
+## real 1m6.119s
+## user 1m2.069s
+## sys  0m1.376s
+## Num samples: 18
+## Num observations: 3552
+## Total count: 27389
+## Table density (fraction of non-zero values): 0.125</code></pre>
 </div>
 <div id="customizing-workflow-scripts" class="section level1">
 <h1>Customizing workflow scripts</h1>
