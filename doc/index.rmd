@@ -32,4 +32,6 @@ The Github repo for this code is https://github.com/danknights/mice8992-2016
 #Beta diversity (guerrero negro)
 [HTML](../data/guerreronegro/beta.diversity.html)   [PDF](../data/guerreronegro/beta.diversity.pdf)  
 
+#Statistical analysis (Global Gut)
+[HTML](../data/globalgut-66-adults/statistical.analysis.html)   [PDF](../data/globalgut-66-adults/statistical.analysis.pdf)  
 
