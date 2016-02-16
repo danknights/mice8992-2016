@@ -4,7 +4,6 @@ output:
   html_document:
     theme: default
     toc: true
-    number_sections: yes
 ---
 
 # Course information

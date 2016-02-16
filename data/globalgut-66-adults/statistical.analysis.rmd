@@ -1,0 +1,167 @@
+---
+title: "Day 10: Statistical Analysis (Global Gut)"
+output:
+  html_document:
+    theme: united
+    fig_width: 6
+    fig_height: 6
+  pdf_document:
+    fig_width: 6
+    fig_height: 6
+---
+Back to [Table of Contents](../../doc/index.html)  
+
+**All of the code in this page is meant to be run in ```R``` unless otherwise specified.**
+
+## Loading a genus table and the metadata into R
+Before loading data into R, this QIIME command must be run on the command line to collapse OTU counts into genus (L6) and phylum (L2) count tables:
+```{r eval=FALSE, engine='bash'}
+# (run on command line)
+summarize_taxa.py -i otu_table.biom -L 6
+
+# convert to JSON BIOM format to load into R using R biom package:
+biom convert -i otu_table_L6.biom -o otu_table_L6_json.biom --to-json
+```
+
+
+Inside `R`, Install biom package and vegan package if not installed.
+```{r eval=FALSE}
+install.packages(c('biom','vegan'),repo='http://cran.wustl.edu')
+```
+
+Load biom package, vegan package; load data
+```{r, eval=TRUE}
+library('biom')
+library('vegan')
+
+# load biom file
+genus.biom <- read_biom('otu_table_L6_json.biom')
+
+# Extract data matrix (genus counts) from biom table
+genus <- as.matrix(biom_data(genus.biom))
+
+# transpose so that rows are samples and columns are genera
+genus <- t(genus)
+
+# load mapping file
+map <- read.table('map.txt', sep='\t', comment='', head=T, row.names=1)
+```
+
+It is extremely important to ensure that your genus table and metadata table sample IDs are lined up correctly.
+```{r, eval=TRUE}
+# find the overlapping samples
+common.ids <- intersect(rownames(map), rownames(genus))
+
+# get just the overlapping samples
+genus <- genus[common.ids,]
+map <- map[common.ids,]
+```
+
+See dimensions of genus table. Then drop genera present in < 10% of samples.
+```{r}
+dim(genus)
+genus <- genus[,colMeans(genus > 0) >= .1]
+dim(genus)
+```
+
+Show only the first ten genera in genus table
+```{r}
+colnames(genus)[1:10]
+```
+
+Show the first 10 rows and first 2 columns of the genus table
+```{r}
+genus[1:10,1:2]
+```
+
+See available columns in the metadata
+```{r}
+colnames(map)
+```
+
+Show how many samples are from each Country
+```{r}
+table(map$COUNTRY)
+```
+
+## Basic association testing
+
+Let's run some tests on Prevotella. First extract the Prevotella column and save it to a variable `prevotella` for convenience.
+```{r, eval=TRUE}
+# find out what column Prevotella is in
+grep('g__Prevotella',colnames(genus))
+
+# save that column in a variable
+prevotella <- genus[,grep('g__Prevotella',colnames(genus))]
+```
+
+Visualize the distribution of Prevotella
+```{r, eval=TRUE}
+# find out what column Prevotella is in
+hist(prevotella, br=30)
+```
+
+
+Run a test of Pearson's correlation of Prevotella and age. Note that the result is not quite significant (p=0.0531).
+```{r, eval=TRUE}
+cor.test(prevotella, map$AGE)
+```
+
+Now run a linear regression of prevotella against age. Notice that statistically this is equivalent to running the Pearson's correlation. The p-value in row 2 column 4 of the "Coefficients" table is the same as the p-value from the correlation test.
+```{r, eval=TRUE}
+# fit a linear model. The "~" means "as a function of"
+fit <- lm(prevotella ~ map$AGE)
+
+# print a summary of the results
+summary(fit)
+
+# A nice way to get the exact p-value for the age regression coefficient using the anova function
+pval <- anova(fit)['map$AGE','Pr(>F)']
+pval
+```
+
+## Testing for normally distributed data
+We can test whether the residuals are normally distributed Kolmogorov-Smirnov test. If p < 0.05, we can reject the null hypothesis that the data came from a normal distribution, meaning that the linear test is not appropriate.
+```{r, eval=TRUE}
+# Make a quantile-quantile plot of the (studentized) residuals vs. a normal distribution
+qqnorm(rstudent(fit)); abline(0,1)
+
+# Kolmogorov-Smirnov test
+ks.test(rstudent(fit), pnorm, mean=mean(rstudent(fit)), sd=sd(rstudent(fit)))
+```
+
+## Controling for confounders
+Perhaps country of origin is a confounder that is obscuring the association of Prevotella and Age. Using lm() we can add confounders to the regression. Now after removing the effects of country, there is a strong association of Prevotella and age.
+```{r, eval=TRUE}
+# fit a linear model. The "~" means "as a function of"
+fit <- lm(prevotella ~ map$AGE + map$COUNTRY)
+
+# print a summary of the results
+summary(fit)
+```
+
+
+## Testing multiple hypotheses
+
+We have so far only tested one genus. Let's test them all using a loop.
+```{r, eval=TRUE}
+
+# pvals is a vector initialized with zeroes
+# with enough slots for the different genera
+pvals <- numeric(ncol(genus))
+
+# "name" the pvalues after the genera
+names(pvals) <- colnames(genus)
+
+# Loop through the columns of the genus table, testing each one
+for(i in 1:ncol(genus)) {
+    fit <- lm(genus[,i] ~ map$AGE + map$COUNTRY)
+    pvals[i] <-  anova(fit)['map$AGE','Pr(>F)']
+}
+
+# note, you could put this all on one line with:
+# for(i in 1:ncol(genus)) pvals[i] <-  anova(lm(genus[,i] ~ map$AGE + map$COUNTRY))['map$AGE','Pr(>F)']
+
+# print the 10 smallest p-values:
+sort(pvals)[1:10]
+```
