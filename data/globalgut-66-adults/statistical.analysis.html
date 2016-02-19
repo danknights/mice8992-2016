@@ -70,7 +70,7 @@ img {
 <h2>Loading a genus table and the metadata into R</h2>
 <p>Before loading data into R, this QIIME command must be run on the command line to collapse OTU counts into genus (L6) and phylum (L2) count tables:</p>
 <pre class="bash"><code># (run on command line)
-summarize_taxa.py -i otu_table.biom -L 6
+summarize_taxa.py -i otu_table.biom -L 6 
 
 # convert to JSON BIOM format to load into R using R biom package:
 biom convert -i otu_table_L6.biom -o otu_table_L6_json.biom --to-json</code></pre>
@@ -121,30 +121,32 @@ dim(genus)</code></pre>
 ##  [8] &quot;k__Bacteria;p__Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Slackia&quot;              
 ##  [9] &quot;k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__&quot;                                             
 ## [10] &quot;k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides&quot;</code></pre>
+<p>Strip the kingdom level from the names so that these are easier to display.</p>
+<pre class="r"><code>colnames(genus) &lt;- sapply(strsplit(colnames(genus),'p__'),'[',2)</code></pre>
 <p>Show the first 10 rows and first 2 columns of the genus table</p>
 <pre class="r"><code>genus[1:10,1:2]</code></pre>
-<pre><code>##                k__Archaea;p__Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter
-## h122M.1.418534                                                                                                      0.0015625000
-## h85M.1.418596                                                                                                       0.0010368066
-## h95M.1.418831                                                                                                       0.0004625347
-## h9M.1.418588                                                                                                        0.0000000000
-## k278A.2.418424                                                                                                      0.0000000000
-## h146M.1.418838                                                                                                      0.0000000000
-## h147M.1.418531                                                                                                      0.0000000000
-## h101M.1.418586                                                                                                      0.0004692633
-## h165M.1.418394                                                                                                      0.0000000000
-## h186M.1.418788                                                                                                      0.0003984064
-##                k__Archaea;p__Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanosphaera
-## h122M.1.418534                                                                                                  0.0015625000
-## h85M.1.418596                                                                                                   0.0005184033
-## h95M.1.418831                                                                                                   0.0009250694
-## h9M.1.418588                                                                                                    0.0000000000
-## k278A.2.418424                                                                                                  0.0000000000
-## h146M.1.418838                                                                                                  0.0007648184
-## h147M.1.418531                                                                                                  0.0031890661
-## h101M.1.418586                                                                                                  0.0000000000
-## h165M.1.418394                                                                                                  0.0000000000
-## h186M.1.418788                                                                                                  0.0015936255</code></pre>
+<pre><code>##                Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter
+## h122M.1.418534                                                                                        0.0015625000
+## h85M.1.418596                                                                                         0.0010368066
+## h95M.1.418831                                                                                         0.0004625347
+## h9M.1.418588                                                                                          0.0000000000
+## k278A.2.418424                                                                                        0.0000000000
+## h146M.1.418838                                                                                        0.0000000000
+## h147M.1.418531                                                                                        0.0000000000
+## h101M.1.418586                                                                                        0.0004692633
+## h165M.1.418394                                                                                        0.0000000000
+## h186M.1.418788                                                                                        0.0003984064
+##                Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanosphaera
+## h122M.1.418534                                                                                    0.0015625000
+## h85M.1.418596                                                                                     0.0005184033
+## h95M.1.418831                                                                                     0.0009250694
+## h9M.1.418588                                                                                      0.0000000000
+## k278A.2.418424                                                                                    0.0000000000
+## h146M.1.418838                                                                                    0.0007648184
+## h147M.1.418531                                                                                    0.0031890661
+## h101M.1.418586                                                                                    0.0000000000
+## h165M.1.418394                                                                                    0.0000000000
+## h186M.1.418788                                                                                    0.0015936255</code></pre>
 <p>See available columns in the metadata</p>
 <pre class="r"><code>colnames(map)</code></pre>
 <pre><code>##  [1] &quot;BarcodeSequence&quot;               &quot;LinkerPrimerSequence&quot;         
@@ -293,26 +295,1153 @@ for(i in 1:ncol(genus)) {
 
 # print the 10 smallest p-values:
 sort(pvals)[1:10]</code></pre>
-<pre><code>##                                                                              k__Bacteria;p__WPS-2;c__;o__;f__;g__ 
-##                                                                                                       0.002762885 
-##                      k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella 
-##                                                                                                       0.002841431 
-##                                              k__Bacteria;p__Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__ 
-##                                                                                                       0.004747721 
-##                               k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__ 
-##                                                                                                       0.010042840 
-##                        k__Bacteria;p__Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus 
-##                                                                                                       0.011344588 
-##                                              k__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__ 
-##                                                                                                       0.019484449 
-## k__Archaea;p__Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter 
-##                                                                                                       0.028070760 
-##                                         k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__S24-7;g__ 
-##                                                                                                       0.030610821 
-##                   k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium 
-##                                                                                                       0.035887736 
-##                                                  k__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__;f__;g__ 
-##                                                                                                       0.045431657</code></pre>
+<pre><code>##                                                                               WPS-2;c__;o__;f__;g__ 
+##                                                                                         0.002762885 
+##                       Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella 
+##                                                                                         0.002841431 
+##                                               Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__ 
+##                                                                                         0.004747721 
+##                                Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__ 
+##                                                                                         0.010042840 
+##                         Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus 
+##                                                                                         0.011344588 
+##                                               Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__ 
+##                                                                                         0.019484449 
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter 
+##                                                                                         0.028070760 
+##                                          Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__S24-7;g__ 
+##                                                                                         0.030610821 
+##                    Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium 
+##                                                                                         0.035887736 
+##                                                   Proteobacteria;c__Alphaproteobacteria;o__;f__;g__ 
+##                                                                                         0.045431657</code></pre>
+<p>Note, you could put this all on one line with this:</p>
+<pre class="r"><code># &quot;apply&quot; with genus, 2 means do something to every column of genus
+# (&quot;apply&quot; with genus, 1 would mean do something every row)
+# the last part defines a new function to do to each column, which
+# will be passed in the temporary variable named &quot;xx&quot;
+pvals &lt;- apply(genus, 2, function(xx) anova(lm(xx ~ map$AGE + map$COUNTRY))['map$AGE','Pr(&gt;F)'])
+
+# print the 10 smallest p-values:
+sort(pvals)[1:10]</code></pre>
+<pre><code>##                                                                               WPS-2;c__;o__;f__;g__ 
+##                                                                                         0.002762885 
+##                       Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella 
+##                                                                                         0.002841431 
+##                                               Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__ 
+##                                                                                         0.004747721 
+##                                Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__ 
+##                                                                                         0.010042840 
+##                         Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus 
+##                                                                                         0.011344588 
+##                                               Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__ 
+##                                                                                         0.019484449 
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter 
+##                                                                                         0.028070760 
+##                                          Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__S24-7;g__ 
+##                                                                                         0.030610821 
+##                    Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium 
+##                                                                                         0.035887736 
+##                                                   Proteobacteria;c__Alphaproteobacteria;o__;f__;g__ 
+##                                                                                         0.045431657</code></pre>
+<p>Looks like there are some significant p-values. But did they happen just by chance? There are 97 columns in the genus table, so that means we did 97 tests, and about 5% of them should be p &lt; 0.05 just by chance. To correct for this, we can adjust the p-values using the <code>p.adjust</code> function. Here we are correcting for multiple hypothesis testing use <a href="https://en.wikipedia.org/wiki/False_discovery_rate">False Discovery Rate</a> (FDR). The adjusted p-values are often called “q-values.”</p>
+<pre class="r"><code>qvals &lt;- p.adjust(pvals,'fdr')
+
+# print the lowest 10 q-values
+sort(qvals)[1:10]</code></pre>
+<pre><code>##                       Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella 
+##                                                                                           0.1378094 
+##                                                                               WPS-2;c__;o__;f__;g__ 
+##                                                                                           0.1378094 
+##                                               Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__ 
+##                                                                                           0.1535096 
+##                         Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus 
+##                                                                                           0.2200850 
+##                                Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__ 
+##                                                                                           0.2200850 
+##                                               Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__ 
+##                                                                                           0.3149986 
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter 
+##                                                                                           0.3711562 
+##                                          Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__S24-7;g__ 
+##                                                                                           0.3711562 
+##                    Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium 
+##                                                                                           0.3867900 
+##                                                   Proteobacteria;c__Alphaproteobacteria;o__;f__;g__ 
+##                                                                                           0.4406871</code></pre>
+</div>
+<div id="testing-with-generalized-linear-regression." class="section level2">
+<h2>Testing with generalized linear regression.</h2>
+<p>Let’s test whether the residuals from linear regression were normally distributed for all of the taxa. To follow along, you can put the following code in a separate text file called <code>stats.r</code> (or whatever you want to call it, and then call it using <code>source('stats.r')</code>.</p>
+<pre class="r"><code>ks.pvals &lt;- numeric(ncol(genus))
+
+# &quot;name&quot; the pvalues after the genera
+names(ks.pvals) &lt;- colnames(genus)
+
+# Loop through the columns of the genus table, testing each one
+for(i in 1:ncol(genus)) {
+    fit &lt;- lm(genus[,i] ~ map$AGE + map$COUNTRY)
+    ks.pvals[i] &lt;-  ks.test(rstudent(fit), pnorm, mean=mean(rstudent(fit)), sd=sd(rstudent(fit)),exact=FALSE)$p.value
+}</code></pre>
+<pre><code>## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test
+
+## Warning in ks.test(rstudent(fit), pnorm, mean = mean(rstudent(fit)), sd =
+## sd(rstudent(fit)), : ties should not be present for the Kolmogorov-Smirnov
+## test</code></pre>
+<pre class="r"><code># Now since we ran 97 tests we should correct for multiple hypothesis testing.
+ks.qvals &lt;- p.adjust(ks.pvals,'fdr')
+
+# print the lowest 10 q-values
+sort(ks.qvals)[1:10]</code></pre>
+<pre><code>##                                       Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__RF16;g__ 
+##                                                                                    1.076916e-14 
+##                                Firmicutes;c__Bacilli;o__Lactobacillales;f__Leuconostocaceae;g__ 
+##                                                                                    5.761502e-13 
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter 
+##                                                                                    2.408703e-12 
+##              Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__Victivallis 
+##                                                                                    2.278486e-11 
+##                   Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Comamonadaceae;g__ 
+##                                                                                    2.695500e-10 
+##                     Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes 
+##                                                                                    9.155081e-10 
+##            Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma 
+##                                                                                    2.454626e-09 
+##                   Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus 
+##                                                                                    4.203562e-09 
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Escherichia 
+##                                                                                    4.203562e-09 
+##     Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Coprobacillus 
+##                                                                                    4.632104e-09</code></pre>
+<p>Wow. There are a lot of these whose residuals are highly non-normal. Let’s use a negative binomial distribution instead. We will use the <code>edgeR</code> package. If you don’t have it, you can install it with:</p>
+<pre class="r"><code>source(&quot;https://bioconductor.org/biocLite.R&quot;)
+
+# If the previous command doesn't work, try http://
+
+biocLite(&quot;edgeR&quot;)</code></pre>
+<p>Now use a convenient wrapper function that I provided in <code>repo/src/wrap.edgeR.r</code>. Load this script using <code>source</code>:</p>
+<pre class="r"><code>source('../../src/wrap.edgeR.r')</code></pre>
+<pre><code>## Loading required package: edgeR</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre><code>## Warning: package 'limma' was built under R version 3.2.3</code></pre>
+<p>Note: the negative binomial uses raw counts of sequences (rarefied or not), not the relative abundances. Therefore we must re-run <code>summarize_taxa.py</code> with the <code>-a</code> flag to use absolute abundance. <strong>These commands are run on the command line (not in R)</strong></p>
+<pre class="bash"><code># (run on command line)
+summarize_taxa.py -i otu_table.biom -L 6 -a -o taxa-absolute
+
+# convert to JSON BIOM format to load into R using R biom package:
+biom convert -i taxa-absolute/otu_table_L6.biom -o taxa-absolute/otu_table_L6_json.biom --to-json</code></pre>
+<p>Now we need to load the genus table again.</p>
+<pre class="r"><code>genus.biom &lt;- read_biom('taxa-absolute/otu_table_L6_json.biom')
+genus.a &lt;- as.matrix(biom_data(genus.biom))
+genus.a &lt;- t(genus.a)
+genus.a &lt;- genus.a[common.ids,]
+genus.a &lt;- genus.a[,colMeans(genus.a &gt; 0) &gt;= .1]
+colnames(genus.a) &lt;- sapply(strsplit(colnames(genus.a),'p__'),'[',2)</code></pre>
+<p>First let us run the regression without covariates. The main function in this script is <code>glm.edgeR()</code>. This function will perform multiple hypothesis testing on all columns of a data matrix. It has the following main parameters: -x: the independent variable. If discrete must be binary; OK to be continuous. -Y: A matrix with samples in rows and dependent variables in columns -covariates: a matrix of additional covariates you want to control for (default NULL)</p>
+<pre class="r"><code>result &lt;- glm.edgeR(x=map$AGE, Y=genus.a)</code></pre>
+<pre><code>## Making DGEList...
+## calcNormFactors...
+## estimate common dispersion...
+## estimate trended dispersion...
+## estimate tagwise dispersion...
+## fit glm...
+## likelihood ratio test...</code></pre>
+<p>We can print the top “tags” (genera) using the topTags function. Note that two genera are significant even after correction for multiple hypothesis testing.</p>
+<pre class="r"><code>topTags(result)</code></pre>
+<pre><code>## Coefficient:  x 
+##                                                                                                       logFC
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                      0.10705153
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                   -0.06816128
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                             0.04133732
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                -0.01574617
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                     -0.06840230
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium  -0.04492773
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__             0.03860829
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter  0.13186169
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                            0.05371944
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                            0.03726694
+##                                                                                                   logCPM
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                     11.04892
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                   13.37950
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                            12.95898
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                15.82647
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                     11.08899
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium  14.14257
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__            13.37335
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter 10.92203
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                           11.56598
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                           10.47449
+##                                                                                                        LR
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                     11.920014
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                   11.430793
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                             4.220124
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                 4.218159
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                      3.427907
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium   3.303897
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__             3.004676
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter  2.986154
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                            2.737262
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                            2.174756
+##                                                                                                       PValue
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                     0.0005553406
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                   0.0007223685
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                            0.0399472332
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                0.0399935344
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                     0.0641032986
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium  0.0691157195
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__            0.0830245689
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter 0.0839794047
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                           0.0980326107
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                           0.1402917541
+##                                                                                                        FDR
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                     0.03503487
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                   0.03503487
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                            0.96984321
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                0.96984321
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                     0.98181209
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium  0.98181209
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__            0.98181209
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter 0.98181209
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                           0.98181209
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                           0.98181209</code></pre>
+<p>However, we have not controlled for COUNTRY, which may be a confounder. We can do this with edgeR.</p>
+<pre class="r"><code>result &lt;- glm.edgeR(x=map$AGE, Y=genus.a, covariates=map$COUNTRY)</code></pre>
+<pre><code>## Making DGEList...
+## calcNormFactors...
+## estimate common dispersion...
+## estimate trended dispersion...
+## estimate tagwise dispersion...
+## fit glm...
+## likelihood ratio test...</code></pre>
+<pre class="r"><code>topTags(result)</code></pre>
+<pre><code>## Coefficient:  x 
+##                                                                                                      logFC
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                  -0.05175765
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]           0.04802689
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                     0.07897558
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium               -0.01581681
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                           0.05509428
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                  -0.03662945
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium -0.05065800
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma           -0.02490410
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                            0.03788764
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia         0.02852503
+##                                                                                                  logCPM
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                  13.37950
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]          13.87313
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                    11.04892
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium               15.82647
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                          11.56598
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                  17.37559
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium 14.14257
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma           10.47215
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                           12.95898
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia        11.68246
+##                                                                                                      LR
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                  6.890239
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]          6.810955
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                    6.494416
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium               5.120219
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                          4.547161
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                  4.424217
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium 4.076610
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma           3.816345
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                           3.665489
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia        3.525563
+##                                                                                                     PValue
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                  0.008666769
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]          0.009060028
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                    0.010821381
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium               0.023648625
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                          0.032973382
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                  0.035432356
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium 0.043480810
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma           0.050754830
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                           0.055550332
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia        0.060429297
+##                                                                                                      FDR
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                  0.3498913
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]          0.3498913
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                    0.3498913
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium               0.4872203
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                          0.4872203
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                  0.4872203
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium 0.4872203
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma           0.4872203
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                           0.4872203
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia        0.4872203</code></pre>
+<p>Note that no genera are significantly associated with age after controlling for country, and using the negative binomial as the assumed distribution for the residuals.</p>
+<p>Let us test whether any genera are significantly associated with being from the USA, while controling for age:</p>
+<pre class="r"><code># make a vector that is TRUE if sample is from USA, FALSE otherwise
+# the &quot;==&quot; means &quot;test if equal&quot;
+is.USA &lt;- map$COUNTRY == &quot;GAZ:United States of America&quot;
+
+# run with is.USA as the independent variable
+result &lt;- glm.edgeR(x=is.USA, Y=genus.a, covariates=map$AGE)</code></pre>
+<pre><code>## Making DGEList...
+## calcNormFactors...
+## estimate common dispersion...
+## estimate trended dispersion...
+## estimate tagwise dispersion...
+## fit glm...
+## likelihood ratio test...</code></pre>
+<pre class="r"><code>topTags(result)</code></pre>
+<pre><code>## Coefficient:  xTRUE 
+##                                                                                                    logFC
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                              6.348729
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                  5.317940
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio -9.118860
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia        -5.810289
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                         -6.150553
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides          3.040652
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                          -5.439312
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]          -5.104367
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                 -7.063003
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                     -2.807418
+##                                                                                                  logCPM
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                             13.33516
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                 16.17437
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio 14.63896
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia        11.68246
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                         12.51266
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides         13.46415
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                          12.89334
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]          13.87313
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                 12.57612
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                     12.71195
+##                                                                                                       LR
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                             176.08813
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                 141.26282
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio  85.44031
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia         72.09081
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                          60.46102
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides          48.91294
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                           47.72142
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]           42.17749
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                  31.76952
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                      31.65262
+##                                                                                                      PValue
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                             3.464099e-40
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                 1.409522e-32
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio 2.388020e-20
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia        2.055187e-17
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                         7.505003e-15
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides         2.675800e-12
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                          4.912944e-12
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]          8.335380e-11
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                 1.735961e-08
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                     1.843655e-08
+##                                                                                                         FDR
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                             3.360176e-38
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                 6.836184e-31
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio 7.721264e-19
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia        4.983828e-16
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                         1.455971e-13
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides         4.325877e-11
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                          6.807937e-11
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]          1.010665e-09
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                 1.788346e-07
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                     1.788346e-07</code></pre>
+<p>Now we’re talking! Many significant results. Print all with:</p>
+<pre class="r"><code>topTags(result, n=Inf)</code></pre>
+<pre><code>## Coefficient:  xTRUE 
+##                                                                                                           logFC
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                                   6.34872919
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                       5.31793971
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio      -9.11886001
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia             -5.81028945
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                              -6.15055346
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides               3.04065242
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                               -5.43931160
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]               -5.10436692
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                      -7.06300267
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                          -2.80741842
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                       -3.90051018
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__p-75-a5               -5.47452317
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__                                     -2.66352289
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Barnesiellaceae];g__                               5.05288939
+## Proteobacteria;c__Alphaproteobacteria;o__;f__;g__                                                   -4.04836574
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Bilophila      3.00881353
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Ruminobacter       -8.04604202
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__                       -2.19836924
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__                           -4.51583919
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__                -4.01465774
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Odoribacter                   2.66287308
+## Elusimicrobia;c__Elusimicrobia;o__Elusimicrobiales;f__Elusimicrobiaceae;g__                         -4.27200443
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanosphaera     -3.42571689
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__CF231                      -5.13181146
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Lactobacillaceae;g__Lactobacillus                       -4.31172131
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                         -3.92053247
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Sarcina                              -3.45275729
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                               -3.19969497
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Holdemania             2.30506183
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Butyricimonas                 2.19789798
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__S24-7;g__                                          -3.00876173
+## Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus           -3.43254646
+## Proteobacteria;c__Epsilonproteobacteria;o__Campylobacterales;f__Campylobacteraceae;g__Campylobacter -4.75332614
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Catenibacterium       -3.07552218
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Serratia        -3.76667441
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Coprococcus                          0.88322131
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Adlercreutzia           2.27752686
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Alcaligenaceae;g__Sutterella              1.54714024
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__                                 -2.53317787
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Leuconostocaceae;g__                                    -4.01340415
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__                                     0.68500442
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Butyrivibrio                        -2.74515170
+## Verrucomicrobia;c__Verrucomicrobiae;o__Verrucomicrobiales;f__Verrucomicrobiaceae;g__Akkermansia      3.38509598
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Anaerovibrio                        -4.27357100
+## Firmicutes;c__Clostridia;o__Clostridiales;f__[Mogibacteriaceae];g__                                 -1.29985101
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Escherichia     -2.35944545
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__;g__                                                    -4.95409409
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes                          2.48192210
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__[Ruminococcus]                       1.05281092
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__                            -2.29372775
+## WPS-2;c__;o__;f__;g__                                                                               -2.97214709
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Roseburia                            1.05101162
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Slackia                -2.36466673
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma                -2.78078958
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Blautia                              0.72045282
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus                         0.75058108
+## Firmicutes;c__Clostridia;o__;f__;g__                                                                -1.87724472
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                       -1.61800715
+## Tenericutes;c__Mollicutes;o__RF39;f__;g__                                                           -1.53793813
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Enterococcaceae;g__Enterococcus                         -3.66744194
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptococcaceae;g__Peptococcus                          -1.82871653
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__RF16;g__                                           -3.97575483
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__02d06                                -1.42387915
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__                             -2.15695240
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                         -2.49812772
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Comamonadaceae;g__                       -3.30679201
+## Actinobacteria;c__Actinobacteria;o__Actinomycetales;f__Actinomycetaceae;g__Actinomyces              -1.14591502
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter     -3.05982720
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Phascolarctobacterium               -1.02024278
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Anaerostipes                         1.00288656
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__SMB53                                -1.19187994
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                                 0.88884465
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium       1.08881193
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnospira                          0.59493199
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__                       0.66507246
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Collinsella            -0.84476705
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Dialister                           -0.95827624
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                    -0.34459812
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Dorea                                0.39934297
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter -1.05680994
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Epulopiscium                        -0.57767719
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Oscillospira                        -0.27159583
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                               -0.72972807
+## Tenericutes;c__RF3;o__ML615J-28;f__;g__                                                              0.86013439
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Megasphaera                          0.97801446
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__Victivallis                  -0.60254524
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Oxalobacteraceae;g__Oxalobacter          -0.32009129
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Dehalobacteriaceae;g__Dehalobacterium                   0.30530808
+## Firmicutes;c__Bacilli;o__Turicibacterales;f__Turicibacteraceae;g__Turicibacter                       0.37710760
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__                                    -0.08491411
+## Firmicutes;c__Clostridia;o__Clostridiales;f__;g__                                                   -0.08808477
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__[Eubacterium]          0.22285152
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnobacterium                      0.25065694
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Coprobacillus          0.18971570
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__                                     0.12247904
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptostreptococcaceae;g__                               0.07277174
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Desulfovibrio  0.09451716
+##                                                                                                       logCPM
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                                  13.33516
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                      16.17437
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio      14.63896
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia             11.68246
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                              12.51266
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides              13.46415
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                               12.89334
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]               13.87313
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                      12.57612
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                          12.71195
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                       17.37559
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__p-75-a5               11.25422
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__                                     14.69944
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Barnesiellaceae];g__                              11.65976
+## Proteobacteria;c__Alphaproteobacteria;o__;f__;g__                                                   10.71031
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Bilophila     11.14211
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Ruminobacter       13.57149
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__                       11.95478
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__                           11.16206
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__                13.37335
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Odoribacter                  10.68185
+## Elusimicrobia;c__Elusimicrobia;o__Elusimicrobiales;f__Elusimicrobiaceae;g__                         11.01060
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanosphaera     10.53542
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__CF231                      11.37633
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Lactobacillaceae;g__Lactobacillus                       11.59423
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                         11.08899
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Sarcina                              10.74961
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                               10.47449
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Holdemania            10.23023
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Butyricimonas                10.75335
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__S24-7;g__                                          13.58997
+## Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus           11.52620
+## Proteobacteria;c__Epsilonproteobacteria;o__Campylobacterales;f__Campylobacteraceae;g__Campylobacter 11.12120
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Catenibacterium       12.61100
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Serratia        10.74841
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Coprococcus                         14.33786
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Adlercreutzia          10.25628
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Alcaligenaceae;g__Sutterella             12.89825
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__                                 10.36637
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Leuconostocaceae;g__                                    10.72999
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__                                    16.40942
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Butyrivibrio                        10.45324
+## Verrucomicrobia;c__Verrucomicrobiae;o__Verrucomicrobiales;f__Verrucomicrobiaceae;g__Akkermansia     12.04318
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Anaerovibrio                        10.81513
+## Firmicutes;c__Clostridia;o__Clostridiales;f__[Mogibacteriaceae];g__                                 11.24358
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Escherichia     10.24774
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__;g__                                                    11.54658
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes                         10.31506
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__[Ruminococcus]                      13.43032
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__                            10.30114
+## WPS-2;c__;o__;f__;g__                                                                               10.39551
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Roseburia                           13.75258
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Slackia                10.40844
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma                10.47215
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Blautia                             15.17636
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus                        15.29530
+## Firmicutes;c__Clostridia;o__;f__;g__                                                                10.36803
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                       13.37950
+## Tenericutes;c__Mollicutes;o__RF39;f__;g__                                                           12.75506
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Enterococcaceae;g__Enterococcus                         10.91133
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptococcaceae;g__Peptococcus                          10.29986
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__RF16;g__                                           10.48303
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__02d06                                10.26342
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__                             10.78430
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                         11.04892
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Comamonadaceae;g__                       10.44189
+## Actinobacteria;c__Actinobacteria;o__Actinomycetales;f__Actinomycetaceae;g__Actinomyces              10.27099
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter     10.92203
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Phascolarctobacterium               12.57425
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Anaerostipes                        10.86038
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__SMB53                                11.32824
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                                12.95898
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium      14.14257
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnospira                         13.41375
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__                      13.21480
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Collinsella            11.22045
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Dialister                           14.07699
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                    15.82647
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Dorea                               13.22003
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter 10.56789
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Epulopiscium                        10.21051
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Oscillospira                        13.82903
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                               11.56598
+## Tenericutes;c__RF3;o__ML615J-28;f__;g__                                                             10.69928
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Megasphaera                         12.49381
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__Victivallis                  10.23983
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Oxalobacteraceae;g__Oxalobacter          10.21144
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Dehalobacteriaceae;g__Dehalobacterium                  10.18989
+## Firmicutes;c__Bacilli;o__Turicibacterales;f__Turicibacteraceae;g__Turicibacter                      11.20289
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__                                    17.26294
+## Firmicutes;c__Clostridia;o__Clostridiales;f__;g__                                                   15.79517
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__[Eubacterium]         13.55286
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnobacterium                     10.90059
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Coprobacillus         10.29425
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__                                    11.87426
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptostreptococcaceae;g__                              12.09818
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Desulfovibrio 11.49044
+##                                                                                                               LR
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                                  176.08813410
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                      141.26282335
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio       85.44031428
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia              72.09080968
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                               60.46102012
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides               48.91293677
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                                47.72141975
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]                42.17749372
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                       31.76951557
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                           31.65262166
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                        29.89298195
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__p-75-a5                29.24810688
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__                                      26.15734267
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Barnesiellaceae];g__                               25.87576217
+## Proteobacteria;c__Alphaproteobacteria;o__;f__;g__                                                    24.95477187
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Bilophila      24.77978054
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Ruminobacter        24.24735422
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__                        21.83643134
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__                            21.79991062
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__                 20.92665565
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Odoribacter                   20.40499365
+## Elusimicrobia;c__Elusimicrobia;o__Elusimicrobiales;f__Elusimicrobiaceae;g__                          20.09609965
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanosphaera      19.17500313
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__CF231                       18.83159393
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Lactobacillaceae;g__Lactobacillus                        18.35539116
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                          18.34255746
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Sarcina                               18.28715162
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                                18.05346524
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Holdemania             17.98543590
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Butyricimonas                 17.02606034
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__S24-7;g__                                           16.85568462
+## Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus            15.22557508
+## Proteobacteria;c__Epsilonproteobacteria;o__Campylobacterales;f__Campylobacteraceae;g__Campylobacter  15.21865048
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Catenibacterium        14.68473898
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Serratia         14.03098412
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Coprococcus                          14.01879736
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Adlercreutzia           13.86927860
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Alcaligenaceae;g__Sutterella              13.54013182
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__                                  13.11116664
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Leuconostocaceae;g__                                     12.74271263
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__                                     12.72664240
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Butyrivibrio                         12.23235981
+## Verrucomicrobia;c__Verrucomicrobiae;o__Verrucomicrobiales;f__Verrucomicrobiaceae;g__Akkermansia      12.02375003
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Anaerovibrio                         11.87006605
+## Firmicutes;c__Clostridia;o__Clostridiales;f__[Mogibacteriaceae];g__                                  11.51046762
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Escherichia      10.45739212
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__;g__                                                      9.76657418
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes                           9.43945799
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__[Ruminococcus]                        9.34377585
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__                              8.88446062
+## WPS-2;c__;o__;f__;g__                                                                                 8.57740871
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Roseburia                             8.11472152
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Slackia                  8.09077215
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma                  7.96432276
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Blautia                               7.63357063
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus                          6.68434842
+## Firmicutes;c__Clostridia;o__;f__;g__                                                                  6.61915923
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                         5.92138965
+## Tenericutes;c__Mollicutes;o__RF39;f__;g__                                                             5.47736801
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Enterococcaceae;g__Enterococcus                           5.47368332
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptococcaceae;g__Peptococcus                            4.95078755
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__RF16;g__                                             4.63625196
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__02d06                                  4.16238775
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__                               4.10901760
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                           4.10038888
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Comamonadaceae;g__                         4.08685896
+## Actinobacteria;c__Actinobacteria;o__Actinomycetales;f__Actinomycetaceae;g__Actinomyces                4.05017481
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter       3.97858118
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Phascolarctobacterium                 3.80103910
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Anaerostipes                          3.44241559
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__SMB53                                  3.21493465
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                                  2.40541909
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium        2.33191270
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnospira                           2.32454818
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__                        2.32284257
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Collinsella              2.29838241
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Dialister                             2.24952139
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                      2.07295693
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Dorea                                 2.05009600
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter   1.95338640
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Epulopiscium                          0.86912167
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Oscillospira                          0.76027176
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                                 0.60242662
+## Tenericutes;c__RF3;o__ML615J-28;f__;g__                                                               0.44995421
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Megasphaera                           0.43405063
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__Victivallis                    0.41260986
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Oxalobacteraceae;g__Oxalobacter            0.30861819
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Dehalobacteriaceae;g__Dehalobacterium                    0.27646094
+## Firmicutes;c__Bacilli;o__Turicibacterales;f__Turicibacteraceae;g__Turicibacter                        0.23891530
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__                                      0.20725753
+## Firmicutes;c__Clostridia;o__Clostridiales;f__;g__                                                     0.19199673
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__[Eubacterium]           0.18059500
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnobacterium                       0.17825073
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Coprobacillus           0.07214812
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__                                      0.01701154
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptostreptococcaceae;g__                                0.01616665
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Desulfovibrio   0.01471045
+##                                                                                                           PValue
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                                  3.464099e-40
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                      1.409522e-32
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio      2.388020e-20
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia             2.055187e-17
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                              7.505003e-15
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides              2.675800e-12
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                               4.912944e-12
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]               8.335380e-11
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                      1.735961e-08
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                          1.843655e-08
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                       4.565624e-08
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__p-75-a5               6.367841e-08
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__                                     3.146982e-07
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Barnesiellaceae];g__                              3.641125e-07
+## Proteobacteria;c__Alphaproteobacteria;o__;f__;g__                                                   5.869108e-07
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Bilophila     6.426811e-07
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Ruminobacter       8.472339e-07
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__                       2.969088e-06
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__                           3.026142e-06
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__                4.772078e-06
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Odoribacter                  6.266606e-06
+## Elusimicrobia;c__Elusimicrobia;o__Elusimicrobiales;f__Elusimicrobiaceae;g__                         7.364671e-06
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanosphaera     1.192650e-05
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__CF231                      1.427823e-05
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Lactobacillaceae;g__Lactobacillus                       1.832996e-05
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                         1.845385e-05
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Sarcina                              1.899842e-05
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                               2.147874e-05
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Holdemania            2.226016e-05
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Butyricimonas                3.687029e-05
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__S24-7;g__                                          4.033235e-05
+## Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus           9.540262e-05
+## Proteobacteria;c__Epsilonproteobacteria;o__Campylobacterales;f__Campylobacteraceae;g__Campylobacter 9.575307e-05
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Catenibacterium       1.270710e-04
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Serratia        1.798230e-04
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Coprococcus                         1.809922e-04
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Adlercreutzia          1.959759e-04
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Alcaligenaceae;g__Sutterella             2.335160e-04
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__                                 2.935408e-04
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Leuconostocaceae;g__                                    3.573990e-04
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__                                    3.604831e-04
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Butyrivibrio                        4.696776e-04
+## Verrucomicrobia;c__Verrucomicrobiae;o__Verrucomicrobiales;f__Verrucomicrobiaceae;g__Akkermansia     5.252691e-04
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Anaerovibrio                        5.704339e-04
+## Firmicutes;c__Clostridia;o__Clostridiales;f__[Mogibacteriaceae];g__                                 6.920537e-04
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Escherichia     1.221596e-03
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__;g__                                                    1.777133e-03
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes                         2.123662e-03
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__[Ruminococcus]                      2.237441e-03
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__                            2.876080e-03
+## WPS-2;c__;o__;f__;g__                                                                               3.403594e-03
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Roseburia                           4.390722e-03
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Slackia                4.449120e-03
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma                4.770834e-03
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Blautia                             5.729177e-03
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus                        9.726307e-03
+## Firmicutes;c__Clostridia;o__;f__;g__                                                                1.008874e-02
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                       1.495816e-02
+## Tenericutes;c__Mollicutes;o__RF39;f__;g__                                                           1.926424e-02
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Enterococcaceae;g__Enterococcus                         1.930490e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptococcaceae;g__Peptococcus                          2.607879e-02
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__RF16;g__                                           3.130330e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__02d06                                4.133110e-02
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__                             4.265513e-02
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                         4.287335e-02
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Comamonadaceae;g__                       4.321789e-02
+## Actinobacteria;c__Actinobacteria;o__Actinomycetales;f__Actinomycetaceae;g__Actinomyces              4.416677e-02
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter     4.608236e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Phascolarctobacterium               5.122079e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Anaerostipes                        6.354273e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__SMB53                                7.296910e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                                1.209157e-01
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium      1.267461e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnospira                         1.273472e-01
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__                      1.274869e-01
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Collinsella            1.295088e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Dialister                           1.336557e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                    1.499306e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Dorea                               1.521966e-01
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter 1.622224e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Epulopiscium                        3.511986e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Oscillospira                        3.832435e-01
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                               4.376537e-01
+## Tenericutes;c__RF3;o__ML615J-28;f__;g__                                                             5.023567e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Megasphaera                         5.100080e-01
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__Victivallis                  5.206478e-01
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Oxalobacteraceae;g__Oxalobacter          5.785294e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Dehalobacteriaceae;g__Dehalobacterium                  5.990303e-01
+## Firmicutes;c__Bacilli;o__Turicibacterales;f__Turicibacteraceae;g__Turicibacter                      6.249906e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__                                    6.489255e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__;g__                                                   6.612599e-01
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__[Eubacterium]         6.708624e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnobacterium                     6.728809e-01
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Coprobacillus         7.882344e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__                                    8.962276e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptostreptococcaceae;g__                              8.988232e-01
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Desulfovibrio 9.034640e-01
+##                                                                                                              FDR
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__                                  3.360176e-38
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides                      6.836184e-31
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Succinivibrio      7.721264e-19
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Bulleidia             4.983828e-16
+## Cyanobacteria;c__4C0d-2;o__YS2;f__;g__                                                              1.455971e-13
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae;g__Parabacteroides              4.325877e-11
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__;g__                                               6.807937e-11
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__[Prevotella]               1.010665e-09
+## Spirochaetes;c__Spirochaetes;o__Spirochaetales;f__Spirochaetaceae;g__Treponema                      1.788346e-07
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Clostridium                          1.788346e-07
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella                       4.026050e-07
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__p-75-a5               5.147338e-07
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__                                     2.348132e-06
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Barnesiellaceae];g__                              2.522779e-06
+## Proteobacteria;c__Alphaproteobacteria;o__;f__;g__                                                   3.795357e-06
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Bilophila     3.896254e-06
+## Proteobacteria;c__Gammaproteobacteria;o__Aeromonadales;f__Succinivibrionaceae;g__Ruminobacter       4.834217e-06
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__                       1.544925e-05
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__                           1.544925e-05
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__                2.314458e-05
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Odoribacter                  2.894575e-05
+## Elusimicrobia;c__Elusimicrobia;o__Elusimicrobiales;f__Elusimicrobiaceae;g__                         3.247151e-05
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanosphaera     5.029871e-05
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae];g__CF231                      5.770784e-05
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Lactobacillaceae;g__Lactobacillus                       6.825359e-05
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella                         6.825359e-05
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__Sarcina                              6.825359e-05
+## Verrucomicrobia;c__Verruco-5;o__WCHB1-41;f__RFP12;g__                                               7.440848e-05
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Holdemania            7.445638e-05
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Odoribacteraceae];g__Butyricimonas                1.192139e-04
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__S24-7;g__                                          1.262012e-04
+## Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus           2.814560e-04
+## Proteobacteria;c__Epsilonproteobacteria;o__Campylobacterales;f__Campylobacteraceae;g__Campylobacter 2.814560e-04
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Catenibacterium       3.625261e-04
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Serratia        4.876734e-04
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Coprococcus                         4.876734e-04
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Adlercreutzia          5.137747e-04
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Alcaligenaceae;g__Sutterella             5.960803e-04
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__                                 7.300887e-04
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Leuconostocaceae;g__                                    8.528504e-04
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__                                    8.528504e-04
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Butyrivibrio                        1.084732e-03
+## Verrucomicrobia;c__Verrucomicrobiae;o__Verrucomicrobiales;f__Verrucomicrobiaceae;g__Akkermansia     1.184909e-03
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Anaerovibrio                        1.257547e-03
+## Firmicutes;c__Clostridia;o__Clostridiales;f__[Mogibacteriaceae];g__                                 1.491760e-03
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Escherichia     2.575975e-03
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__;g__                                                    3.667700e-03
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes                         4.291568e-03
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__[Ruminococcus]                      4.429219e-03
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__                            5.579595e-03
+## WPS-2;c__;o__;f__;g__                                                                               6.473502e-03
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Roseburia                           8.142730e-03
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Slackia                8.142730e-03
+## Tenericutes;c__Mollicutes;o__Anaeroplasmatales;f__Anaeroplasmataceae;g__Anaeroplasma                8.569831e-03
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Blautia                             1.010418e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus                        1.684735e-02
+## Firmicutes;c__Clostridia;o__;f__;g__                                                                1.716857e-02
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Streptococcus                       2.501623e-02
+## Tenericutes;c__Mollicutes;o__RF39;f__;g__                                                           3.120959e-02
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Enterococcaceae;g__Enterococcus                         3.120959e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptococcaceae;g__Peptococcus                          4.146955e-02
+## Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__RF16;g__                                           4.897451e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__02d06                                6.351720e-02
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__                             6.351720e-02
+## Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae;g__Lactococcus                         6.351720e-02
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Comamonadaceae;g__                       6.351720e-02
+## Actinobacteria;c__Actinobacteria;o__Actinomycetales;f__Actinomycetaceae;g__Actinomyces              6.394294e-02
+## Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;g__Citrobacter     6.573514e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Phascolarctobacterium               7.200603e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Anaerostipes                        8.805206e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae;g__SMB53                                9.969019e-02
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae;g__                                1.629004e-01
+## Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium      1.648830e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnospira                         1.648830e-01
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__                      1.648830e-01
+## Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Collinsella            1.652941e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Dialister                           1.683715e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium                    1.864521e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Dorea                               1.868743e-01
+## Euryarchaeota;c__Methanobacteria;o__Methanobacteriales;f__Methanobacteriaceae;g__Methanobrevibacter 1.966947e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Epulopiscium                        4.205711e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Oscillospira                        4.533490e-01
+## Proteobacteria;c__Alphaproteobacteria;o__RF32;f__;g__                                               5.114748e-01
+## Tenericutes;c__RF3;o__ML615J-28;f__;g__                                                             5.801024e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Megasphaera                         5.820092e-01
+## Lentisphaerae;c__[Lentisphaeria];o__Victivallales;f__Victivallaceae;g__Victivallis                  5.872423e-01
+## Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Oxalobacteraceae;g__Oxalobacter          6.450270e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Dehalobacteriaceae;g__Dehalobacterium                  6.602947e-01
+## Firmicutes;c__Bacilli;o__Turicibacterales;f__Turicibacteraceae;g__Turicibacter                      6.811696e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__                                    6.993974e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__;g__                                                   7.018220e-01
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__[Eubacterium]         7.018220e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Lachnobacterium                     7.018220e-01
+## Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Coprobacillus         8.133908e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__                                    9.034640e-01
+## Firmicutes;c__Clostridia;o__Clostridiales;f__Peptostreptococcaceae;g__                              9.034640e-01
+## Proteobacteria;c__Deltaproteobacteria;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Desulfovibrio 9.034640e-01</code></pre>
+<p>Write the results to a tab-delimited file (to open in Excel) with:</p>
+<pre class="r"><code>write.table(topTags(result, n=Inf)$table, file='edgeR_results.txt',sep='\t',quote=FALSE, col.names=NA)</code></pre>
+<p>How many genera were significantly associated with the USA?</p>
+<pre class="r"><code>sum(topTags(result,n=Inf)$table$FDR &lt;= 0.05)</code></pre>
+<pre><code>## [1] 62</code></pre>
 </div>
 
 

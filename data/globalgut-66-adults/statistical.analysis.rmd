@@ -17,7 +17,7 @@ Back to [Table of Contents](../../doc/index.html)
 Before loading data into R, this QIIME command must be run on the command line to collapse OTU counts into genus (L6) and phylum (L2) count tables:
 ```{r eval=FALSE, engine='bash'}
 # (run on command line)
-summarize_taxa.py -i otu_table.biom -L 6
+summarize_taxa.py -i otu_table.biom -L 6 
 
 # convert to JSON BIOM format to load into R using R biom package:
 biom convert -i otu_table_L6.biom -o otu_table_L6_json.biom --to-json
@@ -67,6 +67,11 @@ dim(genus)
 Show only the first ten genera in genus table
 ```{r}
 colnames(genus)[1:10]
+```
+
+Strip the kingdom level from the names so that these are easier to display.
+```{r}
+colnames(genus) <- sapply(strsplit(colnames(genus),'p__'),'[',2)
 ```
 
 Show the first 10 rows and first 2 columns of the genus table
@@ -164,4 +169,142 @@ for(i in 1:ncol(genus)) {
 
 # print the 10 smallest p-values:
 sort(pvals)[1:10]
+```
+
+
+
+Note, you could put this all on one line with this:
+```{r, eval=TRUE}
+# "apply" with genus, 2 means do something to every column of genus
+# ("apply" with genus, 1 would mean do something every row)
+# the last part defines a new function to do to each column, which
+# will be passed in the temporary variable named "xx"
+pvals <- apply(genus, 2, function(xx) anova(lm(xx ~ map$AGE + map$COUNTRY))['map$AGE','Pr(>F)'])
+
+# print the 10 smallest p-values:
+sort(pvals)[1:10]
+```
+
+Looks like there are some significant p-values. But did they happen just by chance? There are 97 columns in the genus table, so 
+that means we did 97 tests, and about 5% of them should be p < 0.05 just by chance. To correct for this, we can adjust the
+p-values using the `p.adjust` function. Here we are correcting for multiple hypothesis testing use [False Discovery Rate](https://en.wikipedia.org/wiki/False_discovery_rate) (FDR). The adjusted p-values are often called "q-values."
+```{r, eval=TRUE}
+qvals <- p.adjust(pvals,'fdr')
+
+# print the lowest 10 q-values
+sort(qvals)[1:10]
+```
+
+## Testing with generalized linear regression.
+Let's test whether the residuals from linear regression were normally distributed for all of the taxa.
+To follow along, you can put the following code in a separate text file called `stats.r` (or whatever you want
+to call it, and then call it using `source('stats.r')`.
+```{r, eval=TRUE}
+ks.pvals <- numeric(ncol(genus))
+
+# "name" the pvalues after the genera
+names(ks.pvals) <- colnames(genus)
+
+# Loop through the columns of the genus table, testing each one
+for(i in 1:ncol(genus)) {
+    fit <- lm(genus[,i] ~ map$AGE + map$COUNTRY)
+    ks.pvals[i] <-  ks.test(rstudent(fit), pnorm, mean=mean(rstudent(fit)), sd=sd(rstudent(fit)),exact=FALSE)$p.value
+}
+
+# Now since we ran 97 tests we should correct for multiple hypothesis testing.
+ks.qvals <- p.adjust(ks.pvals,'fdr')
+
+# print the lowest 10 q-values
+sort(ks.qvals)[1:10]
+```
+
+Wow. There are a lot of these whose residuals are highly non-normal. Let's use a negative binomial distribution instead.
+We will use the `edgeR` package. If you don't have it, you can install it with:
+```{r, eval=FALSE}
+source("https://bioconductor.org/biocLite.R")
+
+# If the previous command doesn't work, try http://
+
+biocLite("edgeR")
+```
+
+Now use a convenient wrapper function that I provided in `repo/src/wrap.edgeR.r`. Load this script using `source`:
+```{r, eval=TRUE}
+source('../../src/wrap.edgeR.r')
+```
+
+Note: the negative binomial uses raw counts of sequences (rarefied or not), not the relative abundances. 
+Therefore we must re-run `summarize_taxa.py` with the `-a` flag to use absolute abundance.
+**These commands are run on the command line (not in R)**
+```{r eval=FALSE, engine='bash'}
+# (run on command line)
+summarize_taxa.py -i otu_table.biom -L 6 -a -o taxa-absolute
+
+# convert to JSON BIOM format to load into R using R biom package:
+biom convert -i taxa-absolute/otu_table_L6.biom -o taxa-absolute/otu_table_L6_json.biom --to-json
+```
+
+Now we need to load the genus table again.
+```{r, eval=TRUE}
+genus.biom <- read_biom('taxa-absolute/otu_table_L6_json.biom')
+genus.a <- as.matrix(biom_data(genus.biom))
+genus.a <- t(genus.a)
+genus.a <- genus.a[common.ids,]
+genus.a <- genus.a[,colMeans(genus.a > 0) >= .1]
+colnames(genus.a) <- sapply(strsplit(colnames(genus.a),'p__'),'[',2)
+```
+
+
+First let us run the regression without covariates. 
+The main function in this script is `glm.edgeR()`. This function will perform multiple hypothesis testing on 
+all columns of a data matrix. It has the following main parameters:
+-x: the independent variable. If discrete must be binary; OK to be continuous.
+-Y: A matrix with samples in rows and dependent variables in columns
+-covariates: a matrix of additional covariates you want to control for (default NULL)
+
+```{r, eval=TRUE}
+result <- glm.edgeR(x=map$AGE, Y=genus.a)
+```
+
+We can print the top "tags" (genera) using the topTags function. Note that two genera are significant
+even after correction for multiple hypothesis testing.
+```{r, eval=TRUE}
+topTags(result)
+```
+
+However, we have not controlled for COUNTRY, which may be a confounder. We can do this with edgeR. 
+
+```{r, eval=TRUE}
+result <- glm.edgeR(x=map$AGE, Y=genus.a, covariates=map$COUNTRY)
+topTags(result)
+```
+
+Note that no genera are significantly associated with age after controlling for country, and using
+the negative binomial as the assumed distribution for the residuals.
+
+Let us test whether any genera are significantly associated with being from the USA, while
+controling for age:
+```{r, eval=TRUE}
+# make a vector that is TRUE if sample is from USA, FALSE otherwise
+# the "==" means "test if equal"
+is.USA <- map$COUNTRY == "GAZ:United States of America"
+
+# run with is.USA as the independent variable
+result <- glm.edgeR(x=is.USA, Y=genus.a, covariates=map$AGE)
+topTags(result)
+```
+
+Now we're talking! Many significant results. Print all with:
+```{r, eval=TRUE}
+topTags(result, n=Inf)
+```
+
+Write the results to a tab-delimited file (to open in Excel) with:
+```{r, eval=TRUE}
+write.table(topTags(result, n=Inf)$table, file='edgeR_results.txt',sep='\t',quote=FALSE, col.names=NA)
+```
+
+How many genera were significantly associated with the USA?
+```{r, eval=TRUE}
+sum(topTags(result,n=Inf)$table$FDR <= 0.05)
 ```
