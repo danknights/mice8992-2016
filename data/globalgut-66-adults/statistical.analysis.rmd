@@ -308,3 +308,31 @@ How many genera were significantly associated with the USA?
 ```{r, eval=TRUE}
 sum(topTags(result,n=Inf)$table$FDR <= 0.05)
 ```
+
+
+## Non-parametric tests
+Whenever we do not need to control for confounding variables, we can use non-parametric tests.
+These are the safest because they don't rely on any null distribution (e.g. normal). They typically
+consider only the **ranks** of values (order of values), not the actual values themselves. 
+
+For testing differences between two categories, we can use the Mann-Whitney U test, sometimes called
+the Wilcoxon Signed Rank test or Wilcoxon Rank Sum test. There are slight differences between these tests.
+Here we will test the difference in **Prevotella** abundance between USA and non-USA. Make sure to use
+the relative abundances, not the absolute abundances.
+```{r, eval=TRUE}
+wilcox.test(prevotella ~ is.USA, exact=FALSE)
+
+# get the exact p-value
+wilcox.test(prevotella ~ is.USA, exact=FALSE)$p.value
+```
+
+We can do a test for differentiation across multiple categories, analogous to ANOVA, using the 
+Kruskal-Wallis test.
+```{r, eval=TRUE}
+kruskal.test(prevotella ~ map$COUNTRY)
+```
+
+For continuous variables, we can use Spearman correlation instead of Pearson correlation.
+```{r, eval=TRUE}
+cor.test(prevotella, map$AGE, method='spearman', exact=FALSE)
+```

@@ -1443,6 +1443,39 @@ result &lt;- glm.edgeR(x=is.USA, Y=genus.a, covariates=map$AGE)</code></pre>
 <pre class="r"><code>sum(topTags(result,n=Inf)$table$FDR &lt;= 0.05)</code></pre>
 <pre><code>## [1] 62</code></pre>
 </div>
+<div id="non-parametric-tests" class="section level2">
+<h2>Non-parametric tests</h2>
+<p>Whenever we do not need to control for confounding variables, we can use non-parametric tests. These are the safest because they don’t rely on any null distribution (e.g. normal). They typically consider only the <strong>ranks</strong> of values (order of values), not the actual values themselves.</p>
+<p>For testing differences between two categories, we can use the Mann-Whitney U test, sometimes called the Wilcoxon Signed Rank test or Wilcoxon Rank Sum test. There are slight differences between these tests. Here we will test the difference in <strong>Prevotella</strong> abundance between USA and non-USA. Make sure to use the relative abundances, not the absolute abundances.</p>
+<pre class="r"><code>wilcox.test(prevotella ~ is.USA, exact=FALSE)</code></pre>
+<pre><code>## 
+##  Wilcoxon rank sum test with continuity correction
+## 
+## data:  prevotella by is.USA
+## W = 934, p-value = 7.732e-10
+## alternative hypothesis: true location shift is not equal to 0</code></pre>
+<pre class="r"><code># get the exact p-value
+wilcox.test(prevotella ~ is.USA, exact=FALSE)$p.value</code></pre>
+<pre><code>## [1] 7.732064e-10</code></pre>
+<p>We can do a test for differentiation across multiple categories, analogous to ANOVA, using the Kruskal-Wallis test.</p>
+<pre class="r"><code>kruskal.test(prevotella ~ map$COUNTRY)</code></pre>
+<pre><code>## 
+##  Kruskal-Wallis rank sum test
+## 
+## data:  prevotella by map$COUNTRY
+## Kruskal-Wallis chi-squared = 42.001, df = 2, p-value = 7.581e-10</code></pre>
+<p>For continuous variables, we can use Spearman correlation instead of Pearson correlation.</p>
+<pre class="r"><code>cor.test(prevotella, map$AGE, method='spearman', exact=FALSE)</code></pre>
+<pre><code>## 
+##  Spearman's rank correlation rho
+## 
+## data:  prevotella and map$AGE
+## S = 60496, p-value = 0.033
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##        rho 
+## -0.2628328</code></pre>
+</div>
 
 
 </div>
