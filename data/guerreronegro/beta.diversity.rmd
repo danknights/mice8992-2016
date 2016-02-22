@@ -193,4 +193,27 @@ for(i in 1:length(metrics)){
 }
 ```
 
+
+Here is the one-liner version if you just want to test one distance metric vs. your continuous variable of interest. There are two ways to do this:
+
+1. ask whether the **overall** distance metric is correlated with your gradient:
+```{R eval=TRUE}
+
+# y is the euclidean distance matrix based on your variable of interest (here depth)
+# note: euclidean diatnace makes sense in the Guerrero Negro sampling depth because 
+# it is measuring physical distance (in millimeters)
+# Note: the "as.vector" stretches it out to a single numeric vector (no longer a matrix)
+y <- as.vector(dist(map$END_DEPTH))
+
+# Stretch out the d
+d <- as.vector(as.dist(d.chisq))
+cor.test(d, y, method='spear', exact=FALSE)
+```
+
+2. You could ask whether PC1, the **first principal axis of variation** (not overall distance), 
+is significantly correlated with your variable of interest. This is an even stronger result if significant.
+```{R eval=TRUE}
+cor.test(map$END_DEPTH, pc.chisq[,1], method='spear', exact=FALSE)
+```
+
 Note that Chi-square has the highest correlation with END_DEPTH.

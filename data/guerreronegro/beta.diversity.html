@@ -265,6 +265,41 @@ for(i in 1:length(metrics)){
 ## sample estimates:
 ##       rho 
 ## 0.4293781</code></pre>
+<p>Here is the one-liner version if you just want to test one distance metric vs. your continuous variable of interest. There are two ways to do this:</p>
+<ol style="list-style-type: decimal">
+<li>ask whether the <strong>overall</strong> distance metric is correlated with your gradient:</li>
+</ol>
+<pre class="r"><code># y is the euclidean distance matrix based on your variable of interest (here depth)
+# note: euclidean diatnace makes sense in the Guerrero Negro sampling depth because 
+# it is measuring physical distance (in millimeters)
+# Note: the &quot;as.vector&quot; stretches it out to a single numeric vector (no longer a matrix)
+y &lt;- as.vector(dist(map$END_DEPTH))
+
+# Stretch out the d
+d &lt;- as.vector(as.dist(d.chisq))
+cor.test(d, y, method='spear', exact=FALSE)</code></pre>
+<pre><code>## 
+##  Spearman's rank correlation rho
+## 
+## data:  d and y
+## S = 149150, p-value &lt; 2.2e-16
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.7501234</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>You could ask whether PC1, the <strong>first principal axis of variation</strong> (not overall distance), is significantly correlated with your variable of interest. This is an even stronger result if significant.</li>
+</ol>
+<pre class="r"><code>cor.test(map$END_DEPTH, pc.chisq[,1], method='spear', exact=FALSE)</code></pre>
+<pre><code>## 
+##  Spearman's rank correlation rho
+## 
+## data:  map$END_DEPTH and pc.chisq[, 1]
+## S = 20.585, p-value = 1.952e-12
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.9787561</code></pre>
 <p>Note that Chi-square has the highest correlation with END_DEPTH.</p>
 </div>
 
