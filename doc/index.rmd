@@ -35,3 +35,5 @@ The Github repo for this code is https://github.com/danknights/mice8992-2016
 #Statistical analysis (Global Gut)
 [HTML](../data/globalgut-66-adults/statistical.analysis.html)   [PDF](../data/globalgut-66-adults/statistical.analysis.pdf)  
 
+#Ordination (Guerrero Negro)
+[HTML](../data/guerreronegro/ordination.html)   [PDF](../data/guerreronegro/ordination.pdf)  

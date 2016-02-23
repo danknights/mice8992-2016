@@ -144,3 +144,27 @@ make_emperor.py -i beta/pcoa_unweighted_unifrac_otu_table.txt -t otu_table_L6.tx
 ![Emperor biplot](3d/Emperor-biplot.png)
 
 Note: you can click the "Labels" tab and "Biplots Label Visibility" to turn on labels. You can edit the taxon summary file in Excel to shorten the labels if needed.
+
+## Detrending
+You can detrend using QIIME `detrend.py`. The current version (QIIME 1.9+) requires that you remove some extra lines at the top and bottom of the PCoA file, which you can do with this command **on the command line**:
+```{r eval=TRUE, engine='bash'}
+# TO BE RUN ON THE COMMAND LINE, NOT IN R
+# replace the name of the input and output files with your file names
+cat beta/pcoa_unweighted_unifrac_otu_table.txt | tail -n+10 | sed -e :a -e '$d;N;2,4ba' -e 'P;D' > beta/pcoa_unweighted_unifrac_otu_table_for_R.txt
+```
+
+Now run `detrend.py` on the pcoa file. I recommend suppressing prerotation with `-r` unless you end up with a slightly rotated horseshoe.
+```{r eval=TRUE, engine='bash'}
+# TO BE RUN ON THE COMMAND LINE, NOT IN R
+detrend.py -i beta/pcoa_unweighted_unifrac_otu_table_for_R.txt -m map.txt -c END_DEPTH -r -o detrend
+```
+
+Then examine the `summary.txt` file in the output folder. This shows the correlation of the expected gradient in your metadata (END_DEPTH here) with PC1 and PC2 before and after detrending, as well as the correlation of the detrended 2D scores with the raw 2D scores.
+```{r eval=TRUE, engine='bash'}
+# TO BE RUN ON THE COMMAND LINE, NOT IN R
+cat detrend/summary.txt
+```
+
+The resulting PDF shows the ordination before/after detrending:
+![Detrended analysis](detrend/detrend.png)
+
