@@ -117,8 +117,30 @@ text(wa[otu.ix,1],wa[otu.ix,2],colnames(otus)[otu.ix],pos=1, cex=.5)
 QIIME allows very useful data visualization and exploration with 3D PCoA plots. 
 
 **These commands must be run on the command line**
-```{r eval=TRUE, engine='bash'}
+```{r eval=FALSE, engine='bash'}
+# TO BE RUN ON THE COMMAND LINE, NOT IN R
+beta_diversity.py -i otu_table.biom -o beta -t ../ref/greengenes/97_otus.tree
+principal_coordinates.py -i beta/unweighted_unifrac_otu_table.txt -o beta/pcoa_unweighted_unifrac_otu_table.txt
 
-You can also make biplots directly in QIIME
+# note: --number_of_segments makes spheres smoother; leave out for large data sets
+make_emperor.py -i beta/pcoa_unweighted_unifrac_otu_table.txt -m map.txt -o 3d --number_of_segments 12
+```
+
+Then open the resulting `index.html` file in your web browser.
+![Emperor biplot](3d/Emperor-3dplot.png)
+
+You can also make biplots directly in QIIME. You will need to have a **tab-delimited** (.txt) taxon summary file.
+
+**These commands must be run on the command line**
+```{r eval=FALSE, engine='bash'}
+# TO BE RUN ON THE COMMAND LINE, NOT IN R
+# get genus-level taxa
+summarize_taxa.py -i otu_table.biom -L 6
+
+# Run make_emperor.py with taxon summary
+make_emperor.py -i beta/pcoa_unweighted_unifrac_otu_table.txt -t otu_table_L6.txt -m map.txt -o 3d --number_of_segments 12
+```
+
 ![Emperor biplot](3d/Emperor-biplot.png)
 
+Note: you can click the "Labels" tab and "Biplots Label Visibility" to turn on labels. You can edit the taxon summary file in Excel to shorten the labels if needed.
