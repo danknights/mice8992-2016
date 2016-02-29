@@ -31,6 +31,10 @@ install.packages(c('biom','vegan'),repo='http://cran.wustl.edu')
 
 Load biom package, vegan package; load data
 ```{r, eval=TRUE}
+
+# increase display width for better viewing
+options(width=110)
+
 library('biom')
 library('vegan')
 
@@ -69,9 +73,9 @@ Show only the first ten genera in genus table
 colnames(genus)[1:10]
 ```
 
-Strip the kingdom level from the names so that these are easier to display.
+Abbreviate the taxonomic names to make them easier to display.
 ```{r}
-colnames(genus) <- sapply(strsplit(colnames(genus),'p__'),'[',2)
+colnames(genus) <- sapply(strsplit(colnames(genus),';'),function(xx) paste(paste(substr(xx[-c(1,length(xx))],4,7),collapse=';'),substring(xx[length(xx)],4),sep=';'))
 ```
 
 Show the first 10 rows and first 2 columns of the genus table
@@ -94,10 +98,11 @@ table(map$COUNTRY)
 Let's run some tests on Prevotella. First extract the Prevotella column and save it to a variable `prevotella` for convenience.
 ```{r, eval=TRUE}
 # find out what column Prevotella is in
-grep('g__Prevotella',colnames(genus))
+# the "$" tells grep to find only column names that end with "Prevotella".
+grep('Prevotella$',colnames(genus))
 
 # save that column in a variable
-prevotella <- genus[,grep('g__Prevotella',colnames(genus))]
+prevotella <- genus[,grep('Prevotella$',colnames(genus))]
 ```
 
 Visualize the distribution of Prevotella
@@ -205,11 +210,18 @@ ks.pvals <- numeric(ncol(genus))
 # "name" the pvalues after the genera
 names(ks.pvals) <- colnames(genus)
 
+# turn annoying warnings off 
+options(warn=-1)
+
 # Loop through the columns of the genus table, testing each one
 for(i in 1:ncol(genus)) {
     fit <- lm(genus[,i] ~ map$AGE + map$COUNTRY)
     ks.pvals[i] <-  ks.test(rstudent(fit), pnorm, mean=mean(rstudent(fit)), sd=sd(rstudent(fit)),exact=FALSE)$p.value
 }
+
+# turn warnings back on
+options(warn=0)
+
 
 # Now since we ran 97 tests we should correct for multiple hypothesis testing.
 ks.qvals <- p.adjust(ks.pvals,'fdr')
@@ -218,7 +230,13 @@ ks.qvals <- p.adjust(ks.pvals,'fdr')
 sort(ks.qvals)[1:10]
 ```
 
-Wow. There are a lot of these whose residuals are highly non-normal. Let's use a negative binomial distribution instead.
+Wow. There are a lot of these whose residuals are highly non-normal. We can confirm this with a q-q plot of the observed p-values vs. the expected p-values in a uniform distribution:
+```{r, eval=TRUE}
+plot(-log10(seq(0,1,length=98)[-1]), -log10(sort(ks.pvals))); abline(0,1)
+```
+
+
+Let's use a negative binomial distribution instead.
 We will use the `edgeR` package. If you don't have it, you can install it with:
 ```{r, eval=FALSE}
 source("https://bioconductor.org/biocLite.R")
@@ -251,16 +269,16 @@ genus.a <- as.matrix(biom_data(genus.biom))
 genus.a <- t(genus.a)
 genus.a <- genus.a[common.ids,]
 genus.a <- genus.a[,colMeans(genus.a > 0) >= .1]
-colnames(genus.a) <- sapply(strsplit(colnames(genus.a),'p__'),'[',2)
+colnames(genus.a) <- sapply(strsplit(colnames(genus.a),';'),function(xx) paste(paste(substr(xx[-c(1,length(xx))],4,7),collapse=';'),substring(xx[length(xx)],4),sep=';'))
 ```
 
 
 First let us run the regression without covariates. 
 The main function in this script is `glm.edgeR()`. This function will perform multiple hypothesis testing on 
-all columns of a data matrix. It has the following main parameters:
--x: the independent variable. If discrete must be binary; OK to be continuous.
--Y: A matrix with samples in rows and dependent variables in columns
--covariates: a matrix of additional covariates you want to control for (default NULL)
+all columns of a data matrix. It has the following main parameters:  
+- x: the independent variable. If discrete must be binary; OK to be continuous.
+- Y: A matrix with samples in rows and dependent variables in columns
+- covariates: a matrix of additional covariates you want to control for (default NULL)
 
 ```{r, eval=TRUE}
 result <- glm.edgeR(x=map$AGE, Y=genus.a)
@@ -272,6 +290,12 @@ even after correction for multiple hypothesis testing.
 topTags(result)
 ```
 
+If we plot all p-values coming from edgeR in a quantile-quantile plot, we see that they mostly follow the null (uniform) distribution:
+```{r, eval=TRUE}
+pvals <- topTags(result,n=Inf)$table[,'PValue']
+plot(-log10(seq(0,1,length=98)[-1]), -log10(sort(pvals))); abline(0,1)
+```
+
 However, we have not controlled for COUNTRY, which may be a confounder. We can do this with edgeR. 
 
 ```{r, eval=TRUE}
@@ -281,6 +305,13 @@ topTags(result)
 
 Note that no genera are significantly associated with age after controlling for country, and using
 the negative binomial as the assumed distribution for the residuals.
+
+We can also pass in a matrix of covariates like this, although note that SEX is not a good variable here because there are only 6 males and there are 6 with unknown gender:
+
+```{r, eval=FALSE}
+result <- glm.edgeR(x=map$AGE, Y=genus.a, covariates=map[ , c('COUNTRY','SEX')])
+```
+
 
 Let us test whether any genera are significantly associated with being from the USA, while
 controling for age:
