@@ -167,4 +167,4 @@ cat detrend/summary.txt
 
 The resulting PDF shows the ordination before/after detrending:
 ![Detrended analysis](detrend/detrend.png)
-
+    
