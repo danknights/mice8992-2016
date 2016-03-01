@@ -8,7 +8,7 @@ output:
 
 # Course information
 Course code browser
-MiCE 8992, Spring 2016  
+Discovering Patterns in the Microbiome  
 Copyright Dan Knights, 2016  
 University of Minnesota  
 http://www.knightslab.org
