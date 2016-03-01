@@ -7,7 +7,7 @@ output:
 ---
 
 # Course information
-Course code browser
+Course code browser  
 Discovering Patterns in the Microbiome  
 Copyright Dan Knights, 2016  
 University of Minnesota  
