@@ -1,0 +1,144 @@
+---
+title: "Constrained Ordination (Guerrero Negro)"
+output:
+  html_document:
+    theme: united
+    fig_width: 6
+    fig_height: 6
+  pdf_document:
+    fig_width: 6
+    fig_height: 6
+---
+Back to [Table of Contents](../../doc/index.html)  
+
+**All of the code in this page is meant to be run in ```R``` unless otherwise specified.**
+
+## Load data and calculate distance metrics. For more explanations of these commands see [Beta diversity](beta.diversity.html)
+```{r eval=TRUE, echo=FALSE}
+suppressWarnings(suppressPackageStartupMessages(library('biom',quietly=TRUE, warn=FALSE)))
+suppressWarnings(suppressPackageStartupMessages(library('vegan',quietly=TRUE, warn=FALSE)))
+
+# load biom file
+otus.biom <- read_biom('otu_table_json.biom')
+
+# Extract data matrix (OTU counts) from biom table
+otus <- as.matrix(biom_data(otus.biom))
+
+# transpose so that rows are samples and columns are OTUs
+otus <- t(otus)
+
+# convert OTU counts to relative abundances
+otus <- sweep(otus, 1, rowSums(otus),'/')
+
+# load mapping file
+map <- read.table('map.txt', sep='\t', comment='', head=T, row.names=1)
+
+# find the overlapping samples
+common.ids <- intersect(rownames(map), rownames(otus))
+
+# get just the overlapping samples
+otus <- otus[common.ids,]
+map <- map[common.ids,]
+
+# Keep only OTUs present in at least 50% of samples
+# This is fairly aggressive but will reduce the clutter in biplots
+otus <- otus[,colMeans(otus>0)>.5]
+```
+
+```{r eval=FALSE, echo=TRUE}
+library('biom',quietly=TRUE, warn=FALSE)
+library('vegan',quietly=TRUE, warn=FALSE)
+
+# load biom file
+otus.biom <- read_biom('otu_table_json.biom')
+
+# Extract data matrix (OTU counts) from biom table
+otus <- as.matrix(biom_data(otus.biom))
+
+# transpose so that rows are samples and columns are OTUs
+otus <- t(otus)
+
+# convert OTU counts to relative abundances
+otus <- sweep(otus, 1, rowSums(otus),'/')
+
+# load mapping file
+map <- read.table('map.txt', sep='\t', comment='', head=T, row.names=1)
+
+# find the overlapping samples
+common.ids <- intersect(rownames(map), rownames(otus))
+
+# get just the overlapping samples
+otus <- otus[common.ids,]
+map <- map[common.ids,]
+
+# Keep only OTUs present in at least 50% of samples
+# This is fairly aggressive but will reduce the clutter in biplots
+otus <- otus[,colMeans(otus>0)>.5]
+```
+
+
+## Regular Correspondence Analysis
+We have seen ordination using "Chi-square" distances and PCoA. But there is another interpretation of this approach. It is essentially equivalent to doing "Correspondence analysis," which tries to put the samples in order along the x-axis so that all species have a unimodal response to the primary gradient. In other words, each species should peak in abundance only one time somewhere in the middle of the gradient, or at one of the ends of the gradient, and should not have additional peaks anywhere along the gradient. If there is truly an ordering that makes this possible, then correspondence analysis will find it. We will use the `vegan` package to run correspondence analysis. We can also plot a biplot using vegan by calling `plot()` on the resulting CA object.
+
+```{r eval=TRUE}
+# run CA using vegan command
+my.ca <- cca(otus)
+
+plot(my.ca)
+```
+
+
+What fraction of total inertia is explained by each axis?
+```{r eval=TRUE}
+my.ca$CA$eig/my.ca$tot.chi
+```
+
+## Constrained correspondence analysis.
+Now we can perform “Direct Gradient Analysis," in which we relate species directly to environmental variable. According to Mike Palmer, “Canonical Correspondence Analysis is the marriage between CA and multiple regression.” Like CCA, CA maximizes the correlation between species scores and sample scores. However, in CCA the sample scores are constrained to be linear combinations of environmental variables. Therefore CCA must explain less variation than pure CA.
+
+
+```{r eval=TRUE}
+# run CA using vegan command
+my.cca <- cca(otus ~ END_DEPTH + CHEMOTAXIS + FLAGELLA, data=map)
+
+plot(my.cca)
+```
+
+What fraction of total inertia is explained by each axis in CCA? Compare this to the fraction of total inertia explained by CA.
+```{r eval=TRUE}
+my.cca$CCA$eig/my.cca$tot.chi
+```
+
+## Assessing significance
+We can compare the variance explained by the constrained and unconstrained correspondence analyses in the first axis. We want to see that constrained CA explains a good fraction of the explainable variation.
+```{r eval=TRUE}
+a <- my.ca$CA$eig/my.ca$tot.chi
+b <- my.cca$CCA$eig/my.cca$tot.chi
+
+# Test what fraction of CA1 variance is explained in CCA1
+b[1]/a[1]
+```
+
+We can also simulate random data by shuffling or permuting the metadata values. We will shuffle them together to preserve correlations between metadata variables. If we shuffle them 10,000 times and calculate the variance explained in CCA axis 1 each time, we can compare this to the observed variation explained to get a p-value.
+
+```{r eval=TRUE}
+# store the observed value
+obs.val <- my.cca$CCA$eig[1]/my.cca$tot.chi
+
+# Perform 999 randomized CCAs
+mc.vals <- replicate(999,{my.cca <- cca(otus ~ END_DEPTH + CHEMOTAXIS + FLAGELLA, data=map[sample(1:nrow(map)),]); my.cca$CCA$eig[1]/my.cca$tot.chi})
+
+# include the observed value as one of the "null" values to be conservative
+mc.vals <- c(mc.vals, obs.val)
+
+# What fraction of the randomized values was greater than the observed value?
+# this is the p-value
+mean(c(obs.val, mc.vals) >= obs.val)
+```
+
+Note that a randomized CCA does not look very good.
+```{r eval=TRUE}
+my.cca <- cca(otus ~ END_DEPTH + CHEMOTAXIS + FLAGELLA, data=map[sample(1:nrow(map)),])
+plot(my.cca)
+```
+
