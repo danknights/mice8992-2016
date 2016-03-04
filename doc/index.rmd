@@ -37,3 +37,6 @@ The Github repo for this code is https://github.com/danknights/mice8992-2016
 
 #Ordination (Guerrero Negro)
 [HTML](../data/guerreronegro/ordination.html)   [PDF](../data/guerreronegro/ordination.pdf)  
+
+#Constrained ordination (Guerrero Negro)
+[HTML](../data/guerreronegro/constrained-ordination.html)   [PDF](../data/guerreronegro/constrained-ordination.pdf)  
