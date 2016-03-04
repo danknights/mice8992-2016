@@ -1,5 +1,5 @@
 ---
-title: "Day 8: Beta Diversity (Guerrero Negro)"
+title: "Ordination (Guerrero Negro)"
 output:
   html_document:
     theme: united
