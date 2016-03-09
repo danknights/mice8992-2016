@@ -3,7 +3,7 @@ Code used in MiCE 8992 Spring 2016
 
 ## Course Code Browser
 The Course Code Browser in HTML R Markdown output is here:  
-http://metagenome.cs.umn.edu/mice8992/repo/doc/index.html
+http://metagenome.cs.umn.edu/microbiomecodebrowser/doc/index.html
 
 ## Getting rmarkdown working
 - Install rmarkdown package in R
