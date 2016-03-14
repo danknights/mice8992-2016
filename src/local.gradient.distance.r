@@ -5,7 +5,7 @@
 }
 
 "lg.graph" <- function(d,neighborhood.size=4,weighted=TRUE) {
-    require('igraph')
+    require('igraph', warn.conflicts=FALSE, quietly=TRUE)
     d <- as.matrix(d)
     dd <- matrix(0,nrow(d), nrow(d))
     for(i in 1:nrow(dd)) dd[i,order(d[i,])[1:(neighborhood.size+1)]] <- 1

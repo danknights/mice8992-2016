@@ -167,4 +167,16 @@ cat detrend/summary.txt
 
 The resulting PDF shows the ordination before/after detrending:
 ![Detrended analysis](detrend/detrend.png)
-    
+
+This is a rather hacky way of doing detrending. During class we derived a 
+```{r eval=TRUE}
+# load the local gradient distance function we derived
+source('../../src/local.gradient.distance.r')
+
+# calculated the local gradient distances with k = 3
+d <- lg.dist(d.bray,neighborhood.size=3)
+
+# plot regular principal coordinates
+pc <- cmdscale(d)
+plot(pc[,1], pc[,2], col=my.colors[layer],pch=16,cex=3, ylim=range(pc), xlim=range(pc),main='Local gradient distance')
+```

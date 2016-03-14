@@ -1,17 +1,17 @@
 require('edgeR')
 
-# x is samples x features
-# y is 2-group factor
+# x is the independent variable, a 2-group factor
+# Y is a matrix of samples x dependent variables
 # returns p-values
-"exact.test.edgeR" <- function(x, y, use.fdr=TRUE,
+"exact.test.edgeR" <- function(x, Y, use.fdr=TRUE,
 		norm.factor.method=c('none','RLE')[1],
 		include.foldchange=FALSE){
 	require('edgeR')
 	
-	y <- as.factor(y)
-	if(length(levels(y)) != 2) stop('y must be a 2-level factor')
+	x <- as.factor(x)
+	if(length(levels(x)) != 2) stop('x must be a 2-level factor')
 
-	d <- DGEList(count=t(x), group=y)
+	d <- DGEList(count=t(Y), group=x)
 	d <- calcNormFactors(d, method=norm.factor.method)
  	d <- estimateCommonDisp(d)
  	d <- estimateTagwiseDisp(d)
