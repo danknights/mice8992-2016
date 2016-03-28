@@ -18,38 +18,15 @@ Back to [Table of Contents](index.html)
 ssh yourusername@login.msi.umn.edu
 ```
 
-2. Tell MSI where to look for the working QIIME installation  
-Run the following commands one time:
-```{r eval=FALSE, engine='bash'}
-echo "export PYTHONPATH=/home/knightsd/public/lib/qiime_1.9.1/lib/python:\$PYTHONPATH" >> ~/.bash_profile
-echo "export PATH=/home/knightsd/public/lib/qiime_1.9.1/bin:\$PATH" >> ~/.bash_profile
-echo "export LD_LIBRARY_PATH=/home/knightsd/public/lib/qiime_1.9.1/lib/qhull-2012.1/lib:\$LD_LIBRARY_PATH" >> ~/.bash_profile
-```
-
-3. Log in to an interactive node, making sure you have enough time and memory
+2. Log in to an interactive node, making sure you have enough time and memory
 ```{r eval=FALSE, engine='bash'}
 isub -n nodes=1:ppn=4 -m 16GB -w 24:00:00
 ```
 
-4. Verify that your environmental variables were set correctly.  
-You should see that each of these variables has "/home/knightsd/public/lib/qiime_1.9.1/<plus some other stuff>" somewhere in it.
+5. Load the QIIME module
 ```{r eval=FALSE, engine='bash'}
-echo $PYTHONPATH
-echo $PATH
-echo $LD_LIBRARY_PATH
+module load qiime/1.9.1
 ```
-
-5. Load the correct python module
-```{r eval=FALSE, engine='bash'}
-module load python/2.7.1
-```
-
-6. Test QIIME
-```{r eval=FALSE, engine='bash'}
-print_qiime_config.py
-```
-
-In the future, you only need to do steps 1, 3, and 5.
 
 Helpful tips:  
 This link shows you the options for different queues and resources at MSI:  

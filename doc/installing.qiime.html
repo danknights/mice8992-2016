@@ -82,32 +82,13 @@ img {
 </ol>
 <pre class="r"><code>ssh yourusername@login.msi.umn.edu</code></pre>
 <ol start="2" style="list-style-type: decimal">
-<li>Tell MSI where to look for the working QIIME installation<br />
-Run the following commands one time:</li>
-</ol>
-<pre class="bash"><code>echo &quot;export PYTHONPATH=/home/knightsd/public/lib/qiime_1.9.1/lib/python:\$PYTHONPATH&quot; &gt;&gt; ~/.bash_profile
-echo &quot;export PATH=/home/knightsd/public/lib/qiime_1.9.1/bin:\$PATH&quot; &gt;&gt; ~/.bash_profile
-echo &quot;export LD_LIBRARY_PATH=/home/knightsd/public/lib/qiime_1.9.1/lib/qhull-2012.1/lib:\$LD_LIBRARY_PATH&quot; &gt;&gt; ~/.bash_profile</code></pre>
-<ol start="3" style="list-style-type: decimal">
 <li>Log in to an interactive node, making sure you have enough time and memory</li>
 </ol>
 <pre class="bash"><code>isub -n nodes=1:ppn=4 -m 16GB -w 24:00:00</code></pre>
-<ol start="4" style="list-style-type: decimal">
-<li>Verify that your environmental variables were set correctly.<br />
-You should see that each of these variables has “/home/knightsd/public/lib/qiime_1.9.1/<plus some other stuff>” somewhere in it.</li>
-</ol>
-<pre class="bash"><code>echo $PYTHONPATH
-echo $PATH
-echo $LD_LIBRARY_PATH</code></pre>
 <ol start="5" style="list-style-type: decimal">
-<li>Load the correct python module</li>
+<li>Load the QIIME module</li>
 </ol>
-<pre class="bash"><code>module load python/2.7.1</code></pre>
-<ol start="6" style="list-style-type: decimal">
-<li>Test QIIME</li>
-</ol>
-<pre class="bash"><code>print_qiime_config.py</code></pre>
-<p>In the future, you only need to do steps 1, 3, and 5.</p>
+<pre class="bash"><code>module load qiime/1.9.1</code></pre>
 <p>Helpful tips:<br />
 This link shows you the options for different queues and resources at MSI:<br />
 <a href="http://msi-riss.readthedocs.org/en/latest/msi/msi-queues.html" class="uri">http://msi-riss.readthedocs.org/en/latest/msi/msi-queues.html</a></p>
