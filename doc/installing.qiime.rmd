@@ -23,7 +23,7 @@ ssh yourusername@login.msi.umn.edu
 isub -n nodes=1:ppn=4 -m 16GB -w 24:00:00
 ```
 
-5. Load the QIIME module
+3. Load the QIIME module
 ```{r eval=FALSE, engine='bash'}
 module load qiime/1.9.1
 ```
