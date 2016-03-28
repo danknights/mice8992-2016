@@ -20,6 +20,11 @@ Load biom package
 library('biom')
 ```
 
+```{r, echo=TRUE, eval=FALSE}
+library('biom')
+```
+
+
 Convert BIOM file to JSON format.  
 If you have data in a "new" BIOM format (HDF5), you first need to convert to JSON format first.
 
