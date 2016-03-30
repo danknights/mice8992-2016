@@ -27,6 +27,8 @@ cd sourcetracker
 # We will add it to a .Renviron file in your home directory.
 echo "" >> $HOME/.Renviron
 echo "SOURCETRACKER_PATH=$PWD" >> $HOME/.Renviron
+
+
 ```
 
 ## Run SourceTracker on example data
