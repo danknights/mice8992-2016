@@ -3,7 +3,6 @@ title: "Discovering Patterns in the Microbiome"
 output:
   html_document:
     theme: default
-    toc: true
 ---
 
 # Course information
@@ -40,3 +39,6 @@ The Github repo for this code is https://github.com/danknights/mice8992-2016
 
 #Constrained ordination (Guerrero Negro)
 [HTML](../data/guerreronegro/constrained-ordination.html)   [PDF](../data/guerreronegro/constrained-ordination.pdf)  
+
+#SourceTracker
+[HTML](sourcetracker.html)   [PDF](sourcetracker.pdf)  
