@@ -30,7 +30,7 @@ echo "SOURCETRACKER_PATH=$PWD" >> $HOME/.Renviron
 ```
 
 ## Run SourceTracker on example data
-This will run SourceTracker with only 2 restarts
+This will run SourceTracker with only 2 restarts. Note: on MSI, run this first: `module load R`
 ```{r eval=FALSE, engine='bash'}
 Rscript sourcetracker_for_qiime.r -i data/otus.txt -m data/metadata-subset.txt -o outdir -v -n 2
 ```
