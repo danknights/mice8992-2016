@@ -16,29 +16,32 @@ Table of Contents
 
 The Github repo for this code is https://github.com/danknights/mice8992-2016
 
-#Installing QIIME
+###Installing QIIME
 [HTML](installing.qiime.html)   [PDF](installing.qiime.pdf)   
 
-#First steps with QIIME
+###First steps with QIIME
 [HTML](first.steps.with.qiime.html)   [PDF](first.steps.with.qiime.pdf)   
 
-#Picking OTUs (guerrero negro)
+###Picking OTUs (guerrero negro)
 [HTML](../data/guerreronegro/OTU.picking.html)   [PDF](../data/guerreronegro/OTU.picking.pdf)  
 
-#Loading QIIME data into R
+###Loading QIIME data into R
 [HTML](loading.data.into.R.html)   [PDF](loading.data.into.R.pdf)   
 
-#Beta diversity (guerrero negro)
+###Beta diversity (guerrero negro)
 [HTML](../data/guerreronegro/beta.diversity.html)   [PDF](../data/guerreronegro/beta.diversity.pdf)  
 
-#Statistical analysis (Global Gut)
+###Statistical analysis (Global Gut)
 [HTML](../data/globalgut-66-adults/statistical.analysis.html)   [PDF](../data/globalgut-66-adults/statistical.analysis.pdf)  
 
-#Ordination (Guerrero Negro)
+###Ordination (Guerrero Negro)
 [HTML](../data/guerreronegro/ordination.html)   [PDF](../data/guerreronegro/ordination.pdf)  
 
-#Constrained ordination (Guerrero Negro)
+###Constrained ordination (Guerrero Negro)
 [HTML](../data/guerreronegro/constrained-ordination.html)   [PDF](../data/guerreronegro/constrained-ordination.pdf)  
 
-#SourceTracker
+###SourceTracker
 [HTML](sourcetracker.html)   [PDF](sourcetracker.pdf)  
+
+###SparCC
+[HTML](../data/globalgut/sparcc.html)   [PDF](../data/globalgut/sparcc.pdf)  
