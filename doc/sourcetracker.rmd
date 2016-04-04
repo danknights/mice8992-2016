@@ -11,7 +11,7 @@ output:
 ---
 Back to [Table of Contents](index.html)  
 
-**All of the code in this page is meant to be run in on the command line unless otherwise specified.**
+**All of the code in this page is meant to be run on the command line unless otherwise specified.**
 
 ##Install SourceTracker  
 First, get SourceTracker from github.com  
