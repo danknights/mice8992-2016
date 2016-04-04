@@ -41,3 +41,11 @@ This will produce pie charts, bar charts, and distribution charts (see Figure 2C
 
 ![Pie chart](sourcetracker/sourcetracker.png)
 
+
+
+## Run SourceTracker on other data
+To run SourceTracker on other data, you need to do the following things:
+
+1. Use a text-based OTU or Taxon table. You can get a text-based OTU table by running `biom convert -i otutable.biom -o otutable.txt --to-tsv` on your biom-formatted OTU table. You can get a text-based taxonomy summary by running the QIIME command `summarize_taxa.py -i otutable.biom -o taxa` and choosing one of the output files ending with `.txt`. If you are using an older version of QIIME
+2. Include an "Env" column in your mapping file. You can open the mapping file in Excel or Google Docs and create a column indicating the known or expected source environment for each sample.
+3. Include a "SourceSink" column in your mapping file. This column should say "source" for source samples and "sink" for sink samples.
