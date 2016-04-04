@@ -91,3 +91,57 @@ hist(sparcc.mat[upper.tri(sparcc.mat)],br=6,xlim=c(-1,1))
 
 SparCC found no large correlations, indicating that the correlations found by Spearman correlation could be explained by compositional artifacts.
 
+## Does SparCC fail when there are many more samples than features?
+
+In the previous example, there were around 250 samples and only 40 genera because we kept only highly prevalence genera. Perhaps the fact that there were so many more samples than features caused SparCC to underestimate the true correlations. This could happen because it is assuming most correlations are close to zero, and the more samples there are the more freedom it has to find ways in which different sets of absolute abundances could have made the correlations close to zero. Therefore let's take just the first 30 samples and rerun:
+
+**To be run on the command line**.
+```{r eval=TRUE, engine='bash'}
+# RUN ON THE COMMAND LINE
+
+# Cut just the first 30 subjects from the USA adults (columns 1-31)
+cut -f 1-31 taxa-USA-adults/otu_table_USA_adults_L6_s60_for_sparcc.txt > taxa-USA-adults/otu_table_USA_adults_L6_s60_30subjects_for_sparcc.txt
+
+# run SparCC again
+python ../../../sparcc/SparCC.py taxa-USA-adults/otu_table_USA_adults_L6_s60_30subjects_for_sparcc.txt -c cor_mat_30subjects_SparCC.out
+```
+
+Now plot the histogram again in R.
+
+**To be run in R**.
+
+```{r eval=TRUE}
+# RUN IN R
+
+# read in the sparcc results using only 30 subjects
+sparcc.mat <- read.table('cor_mat_30subjects_SparCC.out',sep='\t',head=T,row=1)
+cor.mat <- cor(x,method='spear')
+hist(sparcc.mat[upper.tri(sparcc.mat)], br=10, xlim=c(-1,1))
+```
+
+Here we see that although the correlations are still much smaller than the Spearman correlations, they are larger than with the 250-sample data. We can also keep the 250 samples but also keep the full genus table (308 genera):
+
+**To be run on the command line**.
+```{r eval=TRUE, engine='bash'}
+# RUN ON THE COMMAND LINE
+
+# Convert the full genus-level table to SparCC format
+sed 1d taxa-USA-adults/otu_table_USA_adults_L6.txt > taxa-USA-adults/otu_table_USA_adults_L6_for_sparcc.txt
+
+# run SparCC again
+python ../../../sparcc/SparCC.py taxa-USA-adults/otu_table_USA_adults_L6_for_sparcc.txt -c cor_mat_all_genera_SparCC.out
+```
+
+Now plot the histogram again in R.
+
+**To be run in R**.
+
+```{r eval=TRUE}
+# RUN IN R
+
+# read in the sparcc results using only 30 subjects
+sparcc.mat <- read.table('cor_mat_all_genera_SparCC.out',sep='\t',head=T,row=1)
+cor.mat <- cor(x,method='spear')
+hist(sparcc.mat[upper.tri(sparcc.mat)], br=10, xlim=c(-1,1))
+```
+
