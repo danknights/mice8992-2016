@@ -1,0 +1,93 @@
+---
+title: "SparCC (global gut full data)"
+output:
+  html_document:
+    theme: united
+    fig_width: 6
+    fig_height: 6
+  pdf_document:
+    fig_width: 6
+    fig_height: 6
+---
+Back to [Table of Contents](index.html)  
+
+**All of the code in this page is meant to be run on the command line unless otherwise specified.**
+
+##Install SparCC
+Download the repository from the [downloads page](https://bitbucket.org/yonatanf/sparcc/downloads). Unzip the folder, and put it somewhere convenient (like in your course code repository folder). Test that it is working by running the following command on the command line:
+
+
+```{r eval=TRUE, engine='bash'}
+# Test that SparCC is running. 
+# Note that you will have to fix the path to be the correct path 
+# to the "SparCC.py" file on your computer.
+python ../../../sparcc/SparCC.py -h
+
+```
+
+## Prepare data
+We will run SparCC on the Global Gut genus data, only including adults living in the USA. We will also choose a subset of the more prevalent genera (present in about 20% of people or more) for testing to keep things running quickly.
+```{r eval=TRUE, echo=FALSE, engine='bash'}
+rm -rf taxa-USA-adults
+```
+
+```{r eval=TRUE, engine='bash'}
+# RUN ON THE COMMAND LINE
+
+# First, extract only adults living in the USA.
+filter_samples_from_otu_table.py -i otu_table.biom -m map.txt -o otu_table_USA_adults.biom -s "AGE_GROUP:ADULT;COUNTRY:GAZ:United States of America" --output_mapping_fp map_USA_adults.txt
+
+# Summarize taxa at the genus level
+summarize_taxa.py -i otu_table_USA_adults.biom -L 6 -o taxa-USA-adults
+
+# remove genera present in < 60 samples
+filter_otus_from_otu_table.py -i taxa-USA-adults/otu_table_USA_adults_L6.biom -s 60 -o taxa-USA-adults/otu_table_USA_adults_L6_s60.biom
+
+# create a text version (for SparCC) and a JSON version (for R)
+biom convert -i taxa-USA-adults/otu_table_USA_adults_L6_s60.biom --to-json -o taxa-USA-adults/otu_table_USA_adults_L6_s60_json.biom
+biom convert -i taxa-USA-adults/otu_table_USA_adults_L6_s60.biom --to-tsv -o taxa-USA-adults/otu_table_USA_adults_L6_s60.txt
+
+# Now remove the first line of the taxon file. Same would apply to an OTU table.
+sed 1d taxa-USA-adults/otu_table_USA_adults_L6_s60.txt > taxa-USA-adults/otu_table_USA_adults_L6_s60_for_sparcc.txt
+
+```
+
+## Run SparCC
+```{r eval=TRUE, engine='bash'}
+python ../../../sparcc/SparCC.py taxa-USA-adults/otu_table_USA_adults_L6_s60_for_sparcc.txt
+```
+
+The correlation output will be in the file cor_mat_SparCC.out.
+
+## Comparison to Spearman correlation
+
+Now we will compare SparCC to Spearman correlation in R.
+
+**The following commands will be run in R.**
+
+First, load the data into **R**.
+```{r eval=TRUE}
+# load the biom library
+library('biom')
+
+# read in the biom table and extract the data
+x <- t(as.matrix(biom_data(read_biom('taxa-USA-adults/otu_table_USA_adults_L6_s60_json.biom'))))
+
+# read in the sparcc results
+sparcc.mat <- read.table('cor_mat_SparCC.out',sep='\t',head=T,row=1)
+
+```
+
+Plot a histogram of correlations inferred by Spearman correlation.
+```{r eval=TRUE}
+cor.mat <- cor(x,method='spear')
+hist(cor.mat[upper.tri(cor.mat)], br=30, xlim=c(-1,1))
+```
+
+There are a number of large correlations found above 0.5. Let us compare to SparCC.
+```{r eval=TRUE}
+hist(sparcc.mat[upper.tri(sparcc.mat)],br=6,xlim=c(-1,1))
+```
+
+SparCC found no large correlations, indicating that the correlations found by Spearman correlation could be explained by compositional artifacts.
+
