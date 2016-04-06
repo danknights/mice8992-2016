@@ -36,6 +36,9 @@ source activate python2
 
 
 ## Install HUMAnN2
+
+Note: Extensive documentation is [here](https://bitbucket.org/biobakery/humann2/src/tip/doc/UserManual.md?fileviewer=file-view-default).
+
 1. Download it
 2. Extract
 3. Enter the directory, then run the install script.
