@@ -45,3 +45,6 @@ The Github repo for this code is https://github.com/danknights/mice8992-2016
 
 ###SparCC
 [HTML](../data/globalgut/sparcc.html)   [PDF](../data/globalgut/sparcc.pdf)  
+
+###HUMAnN2
+[HTML](humann2.html)   [PDF](humann2.pdf)  
