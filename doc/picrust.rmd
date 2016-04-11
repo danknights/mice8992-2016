@@ -1,0 +1,65 @@
+---
+title: "PICRUSt"
+output:
+  html_document:
+    theme: united
+    fig_width: 5
+    fig_height: 5
+  pdf_document:
+    fig_width: 5
+    fig_height: 5
+---
+Back to [Table of Contents](index.html)  
+
+**All of the code in this page is meant to be run on the command line unless otherwise specified.**
+
+## Install PICRUSt (MSI/Unix)
+
+These instructions assume that you are installing PICRUSt on MSI or another computer where you do not have root access.
+However, even if you do have root access, using Anaconda as a python environment manager can be very useful and can prevent
+a lot of headaches.
+
+First, install Anaconda and set up an environment using Python 2.7. See the [HUMAnN2 page](humann2.html) for Anaconda installation and setup instructions.
+
+After you have created a "python2" environment in Anaconda as described on the [HUMAnN2 page](humann2.html), you can load that environment with `source activate python2`.
+```{r eval=FALSE, engine='bash'}
+# These commands are for running on MSI
+
+# activate your python2 Anaconda environment
+source activate python2
+
+# clone the repository 
+git clone git://github.com/picrust/picrust.git picrust
+
+# enter the data directory
+cd picrust/picrust/data
+
+# download the precalculated picrust files
+wget ftp://ftp.microbio.me/pub/picrust-references/picrust-1.0.0/16S_13_5_precalculated.tab.gz
+wget ftp://ftp.microbio.me/pub/picrust-references/picrust-1.0.0/ko_13_5_precalculated.tab.gz
+
+# enter the top-level directory
+cd ../../
+python setup.py install
+```
+
+Now you should be able to run PICRUSt.
+
+## Run PICRUSt
+```{r eval=FALSE, engine='bash'}
+# load a slightly older version of QIIME
+module load qiime/1.8.0
+
+# Normalize OTU counts by 16S copy number
+normalize_by_copy_number.py -i otu_table.biom -o normalized_otus.biom
+
+# Predict metagenomes
+predict_metagenomes.py -i normalized_otus.biom -o picrust.biom
+
+# Collapse functions to level 3 KEGG pathways
+categorize_by_function.py -i picrust.biom -c KEGG_Pathways -l 3 -o picrust_L3.biom
+
+# (optional) convert to txt
+biom convert -i picrust_L3.biom -o picrust_L3.txt --to-tsv
+```
+

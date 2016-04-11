@@ -27,11 +27,13 @@ bash Anaconda3-4.0.0-MacOSX-x86_64.sh
 
 # now install a "python2" environment also containing anaconda
 # This will let you switch between python2 and 3 easily
-conda create -n python2 python=2.7 anaconda
+conda create -n humann2 python=2.7 anaconda
 
-# Load the python2 environment
-source activate python2
+# enter the python 2 environment that you just created
+source activate humann2
 
+# exit with
+source deactivate
 ```
 
 
@@ -39,39 +41,34 @@ source activate python2
 
 Note: Extensive documentation is [here](https://bitbucket.org/biobakery/humann2/src/tip/doc/UserManual.md?fileviewer=file-view-default).
 
-1. Download it
-2. Extract
+1. Download it from [here](https://pypi.python.org/pypi/humann2) using `wget`.
+2. Extract with `tar xvzf humann2-0.7.0.tar.gz` or whatever the filename is.
 3. Enter the directory, then run the install script.
 
 ```{r eval=FALSE, engine='bash'}
-# Choose an installation directory that you have access to
-export INSTALL_DIR=/project/flatiron/lib/humann2/
 
-# Run a local install
-python setup.py install --home=$INSTALL_DIR
+# enter the humann2 environment (if you are not already in it)
+source activate humann2
+
+# Make sure you are inside the downloaded humann2 directory, then run:
+python setup.py install
 ```
 
-4. Add the appropriate paths to the system environment variables
+4. Download two databases that it needs
 ```{r eval=FALSE, engine='bash'}
-# Add these lines to ~/.bash_profile
-export PATH=$INSTALL_DIR/bin:$PATH
-export PYTHONPATH=$INSTALL_DIR/lib/python:$PYTHONPATH
-```
-
-5. Download two databases that it needs
-```{r eval=FALSE, engine='bash'}
-humann2_databases --download chocophlan full $INSTALL_DIR/db
-humann2_databases --download uniref uniref50_diamond $INSTALL_DIR/db
+# be sure to change the path ~/humann2_databases if desired
+humann2_databases --download chocophlan full ~/humann2_databases
+humann2_databases --download uniref uniref50_diamond ~/humann2_databases
 ```
 
 ## Install Metaphlan2
-1. Download it
-2. Extract it (to the preferred installation directory, say `/project/flatiron/lib/metaphlan2`.
+1. [Download it](https://bitbucket.org/biobakery/metaphlan2/get/default.zip) with `wget https://bitbucket.org/biobakery/metaphlan2/get/default.zip`.
+2. Extract it (to the preferred installation directory, say `~/lib/biobakery-metaphlan2-c07beded1dc3`.
 3. Add the appropriate paths to the system environment variables
 ```{r eval=FALSE, engine='bash'}
 # Add these lines to ~/.bash_profile
-export PATH=/project/flatiron/lib/metaphlan2/biobakery-metaphlan2-f0bfc8620578:$PATH
-export mpa_dir=/project/flatiron/lib/metaphlan2/biobakery-metaphlan2-f0bfc8620578
+export PATH=$HOME/lib/biobakery-metaphlan2-c07beded1dc3:$PATH
+export mpa_dir=$HOME/lib/biobakery-metaphlan2-c07beded1dc3
 ```
 
 ## Run HUMAnN2
