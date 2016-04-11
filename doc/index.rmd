@@ -48,3 +48,7 @@ The Github repo for this code is https://github.com/danknights/mice8992-2016
 
 ###HUMAnN2
 [HTML](humann2.html)   [PDF](humann2.pdf)  
+
+###PICRUSt
+[HTML](picrust.html)   [PDF](picrust.pdf)  
+
