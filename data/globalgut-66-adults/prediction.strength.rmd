@@ -79,13 +79,14 @@ source('../../src/prediction.strength.r')
 bc <- vegdist(genus)
 
 # Run prediction strength analysis on bray-curtis table
-ps <- prediction.strength(bc)
+# Use 100 random splits 
+ps <- prediction.strength(bc,M=100)
 
 # print the prediction strength values
-cat(paste("K =",2:10," Prediction Strength =", ps,sep=' ',collapse='\n'),'\n')
+cat(paste("K =",2:10," Prediction Strength =", round(ps$ps.mean,3), "+/-", round(ps$ps.sd,3), sep=' ',collapse='\n'),'\n')
 
 # plot prediction strength
-plot(2:10,ps,type='b',ylim=c(0,1),xlab='Number of clusters', ylab='Prediction strength')
+plot(2:10,ps$ps.mean,type='b',ylim=c(0,1),xlab='Number of clusters', ylab='Prediction strength')
 ```
 
 Here we see that USA vs. non-USA does not have strong discrete cluster structure at the genus level according to prediction strength.

@@ -64,7 +64,7 @@
             result[j,which(K==k)] <- mean(scores)
         }
     }
-    return(colMeans(result))
+    return(list(ps.mean=colMeans(result),ps.sd=apply(result,2,sd)))
 }
 
 # Tibshirani and Walther's Prediction Strength (2005)
