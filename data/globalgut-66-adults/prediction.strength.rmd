@@ -31,12 +31,11 @@ install.packages(c('biom','vegan','cluster'),repo='http://cran.wustl.edu')
 
 Load packages
 ```{r, eval=TRUE, echo=FALSE}
-library('biom')
-library('vegan')
-library('cluster')
+suppressWarnings(suppressPackageStartupMessages(require('biom')))
+suppressWarnings(suppressPackageStartupMessages(require('vegan')))
+suppressWarnings(suppressPackageStartupMessages(require('cluster')))
 ```
 
-Load packages
 ```{r, eval=FALSE, echo=TRUE}
 library('biom')
 library('vegan')
