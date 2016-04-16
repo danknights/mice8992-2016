@@ -8,6 +8,7 @@
 # Returns the average for M repeats
 # Returns vector of prediction strengths for all values of K
 "prediction.strength" <- function(dmat, K=2:10, M=10){
+    require('cluster')
     dmat <- as.matrix(dmat)
     N <- nrow(dmat)
     

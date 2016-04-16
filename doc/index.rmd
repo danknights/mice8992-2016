@@ -40,6 +40,9 @@ The Github repo for this code is https://github.com/danknights/mice8992-2016
 ###Constrained ordination (Guerrero Negro)
 [HTML](../data/guerreronegro/constrained-ordination.html)   [PDF](../data/guerreronegro/constrained-ordination.pdf)  
 
+### Evaluating clusters with prediction strength  (Global Gut)
+[HTML](../data/globalgut-66-adults/prediction.strength.html)   [PDF](../data/globalgut-66-adults/prediction.strength.pdf)  
+
 ###SourceTracker
 [HTML](sourcetracker.html)   [PDF](sourcetracker.pdf)  
 
