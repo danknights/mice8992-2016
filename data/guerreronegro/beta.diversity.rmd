@@ -127,8 +127,8 @@ beta_diversity.py -i otu_table.biom -o beta -t ../ref/greengenes/97_otus.tree
 Load UniFrac distances, calculate PCoA
 ```{r, eval=TRUE}
 # load unweighted and weighted unifrac
-d.uuf <- read.table('beta/unweighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
-d.wuf <- read.table('beta/weighted_unifrac_otu_table.txt', sep='\t',head=T,row=1)
+d.uuf <- read.table('beta/unweighted_unifrac_otu_table.txt', sep='\t',head=T,row=1, check=F)
+d.wuf <- read.table('beta/weighted_unifrac_otu_table.txt', sep='\t',head=T,row=1, check=F)
 
 # ensure that these last two matrices have the same samples in the 
 # same order as the metadata table
